@@ -1,0 +1,12 @@
+name: release
+
+# Bumped from the commits, built, signed and published to the server's releases
+# (cxxi-lab/hub-ui's reusable workflow).
+on:
+  push:
+    branches: [main]
+
+jobs:
+  release:
+    uses: cxxi-lab/hub-ui/.github/workflows/module-release.yml@main
+    secrets: inherit
