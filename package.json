@@ -1,0 +1,25 @@
+{
+	"name": "@cxxi-lab/hub-module-business",
+	"version": "0.0.0",
+	"private": true,
+	"type": "module",
+	"description": "hub module: Business \u2014 Invoices and clients",
+	"license": "MIT",
+	"scripts": {
+		"build": "hub-module build",
+		"typecheck": "tsc --noEmit"
+	},
+	"dependencies": {
+		"@fortawesome/free-solid-svg-icons": "^7.2.0",
+		"@fortawesome/react-fontawesome": "^3.3.1",
+		"react": "^19.2.4"
+	},
+	"devDependencies": {
+		"@cxxi-lab/hub-module-cli": "^0.1.0",
+		"@cxxi-lab/hub-sdk": "^1.12.0",
+		"@cxxi-lab/hub-ui": "^0.1.0",
+		"@types/react": "^19.2.14",
+		"@types/react-dom": "^19.2.3",
+		"typescript": "^5.3.3"
+	}
+}

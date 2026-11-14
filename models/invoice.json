@@ -1,0 +1,49 @@
+{
+	"collection": "invoice",
+	"version": 1,
+	"fields": {
+		"clientId": { "type": "ref", "collection": "client", "onDelete": "restrict", "required": true },
+		"status": { "type": "enum", "values": ["draft", "issued"], "default": "draft" },
+		"number": { "type": "string", "max": 64, "description": "given when issued (prefix + sequence of the settings)" },
+		"issueDate": { "type": "date" },
+		"dueDate": { "type": "date" },
+		"performanceStartDate": { "type": "date" },
+		"performanceEndDate": { "type": "date" },
+		"operationCategory": { "type": "enum", "values": ["goods", "services", "mixed"], "default": "services" },
+		"currency": { "type": "string", "max": 3, "default": "EUR" },
+		"vatMention": { "type": "string", "max": 500 },
+		"bankAccountId": { "type": "ref", "collection": "bank_account", "onDelete": "nullify" },
+		"notes": { "type": "text", "max": 20000, "encrypted": true },
+		"grossTotalHt": { "type": "int", "default": 0, "description": "cents, like every amount" },
+		"netTotalHt": { "type": "int", "default": 0 },
+		"totalVat": { "type": "int", "default": 0 },
+		"totalTtc": { "type": "int", "default": 0 },
+		"paidAt": { "type": "date" },
+		"paymentMethod": { "type": "enum", "values": ["transfer", "card", "check", "cash", "other"] },
+		"paymentReference": { "type": "string", "max": 255, "encrypted": true },
+		"qontoInvoiceId": { "type": "string", "max": 64 },
+		"einvoicingStatus": { "type": "string", "max": 64 },
+		"lines": {
+			"type": "array",
+			"maxItems": 500,
+			"items": {
+				"type": "object",
+				"fields": {
+					"title": { "type": "string", "max": 255, "required": true, "encrypted": true },
+					"description": { "type": "text", "max": 10000, "encrypted": true },
+					"quantity": { "type": "string", "max": 20, "pattern": "^-?\\d+(\\.\\d{1,3})?$", "default": "1", "description": "up to 3 decimals" },
+					"unit": { "type": "string", "max": 32 },
+					"unitPrice": { "type": "int", "default": 0 },
+					"vatRate": { "type": "int", "min": 0, "max": 10000, "default": 0, "description": "basis points (2000 = 20 %)" },
+					"discountRate": { "type": "int", "min": 0, "max": 10000, "default": 0 },
+					"totalHt": { "type": "int", "default": 0 },
+					"vatAmount": { "type": "int", "default": 0 }
+				}
+			}
+		}
+	},
+	"indexes": [
+		{ "fields": [["status", 1], ["issueDate", -1]] },
+		{ "fields": [["clientId", 1]] }
+	]
+}

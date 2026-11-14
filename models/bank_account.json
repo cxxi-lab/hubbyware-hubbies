@@ -1,0 +1,13 @@
+{
+	"collection": "bank_account",
+	"version": 1,
+	"fields": {
+		"label": { "type": "string", "max": 100, "required": true },
+		"bankName": { "type": "string", "max": 255 },
+		"iban": { "type": "string", "max": 42, "required": true, "encrypted": true },
+		"bic": { "type": "string", "max": 11, "encrypted": true }
+	},
+	"indexes": [
+		{ "fields": [["label", 1]], "unique": true }
+	]
+}

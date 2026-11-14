@@ -1,0 +1,24 @@
+{
+	"collection": "settings",
+	"version": 1,
+	"fields": {
+		"name": { "type": "string", "max": 255, "default": "", "encrypted": true },
+		"activity": { "type": "string", "max": 255, "encrypted": true },
+		"siren": { "type": "string", "max": 9, "pattern": "^\\d{9}$", "encrypted": true },
+		"address": { "type": "string", "max": 255, "encrypted": true },
+		"zipcode": { "type": "string", "max": 16, "encrypted": true },
+		"city": { "type": "string", "max": 128, "encrypted": true },
+		"country": { "type": "string", "max": 2, "pattern": "^[A-Z]{2}$", "default": "FR" },
+		"phone": { "type": "string", "max": 32, "encrypted": true },
+		"email": { "type": "string", "max": 255, "format": "email", "encrypted": true },
+		"website": { "type": "string", "max": 255, "encrypted": true },
+		"vatRegime": { "type": "enum", "values": ["franchise", "standard"], "default": "franchise" },
+		"vatNumber": { "type": "string", "max": 32, "encrypted": true },
+		"invoiceNumberPrefix": { "type": "string", "max": 32, "default": "" },
+		"nextInvoiceSequence": { "type": "int", "min": 1, "default": 1 },
+		"paymentTermDays": { "type": "int", "min": 0, "max": 365, "default": 30 },
+		"latePenaltyRate": { "type": "int", "min": 0, "max": 10000, "default": 0 },
+		"defaultBankAccountId": { "type": "ref", "collection": "bank_account", "onDelete": "nullify" }
+	},
+	"indexes": []
+}
