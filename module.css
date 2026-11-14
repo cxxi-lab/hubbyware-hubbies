@@ -1,0 +1,4 @@
+/* This module's utilities, from its own sources only, on the app's design tokens. */
+@reference "@cxxi-lab/hub-ui/theme.css";
+@import "tailwindcss/utilities.css" layer(utilities) source(none);
+@source "./";
