@@ -1,0 +1,8 @@
+{
+	"id": "planner",
+	"version": "1.4.0",
+	"sdk": "^1.12.0",
+	"label": "Planner",
+	"description": "Calendar and agenda",
+	"icon": "calendar-days"
+}
