@@ -1,9 +1,9 @@
 {
 	"collection": "event",
-	"version": 1,
+	"version": 2,
 	"fields": {
 		"title": { "type": "string", "max": 255, "required": true },
-		"description": { "type": "text", "max": 100000 },
+		"description": { "type": "text", "max": 100000, "encrypted": true },
 		"categoryId": { "type": "ref", "collection": "category", "onDelete": "nullify" },
 		"startsAt": { "type": "datetime", "required": true },
 		"endsAt": { "type": "datetime" },
