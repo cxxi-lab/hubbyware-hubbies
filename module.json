@@ -1,6 +1,6 @@
 {
 	"id": "planner",
-	"version": "1.4.0",
+	"version": "1.5.0",
 	"sdk": "^1.12.0",
 	"label": "Planner",
 	"description": "Calendar and agenda",
