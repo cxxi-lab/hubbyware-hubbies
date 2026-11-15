@@ -60,7 +60,7 @@ function ChipButton({ item, onClick }: { item: PlannerItem; onClick: () => void 
 			<button
 				type="button"
 				onClick={e => { e.stopPropagation(); onClick() }}
-				className="text-left text-xs px-2 py-1 rounded truncate border-0 cursor-pointer text-white hover:brightness-110"
+				className="text-left text-xs px-2 py-1 rounded truncate border-0 cursor-pointer text-on-accent hover:brightness-110"
 				style={{ background: ev.category?.color ?? '#525252' }}
 				title={ev.title}
 			>
@@ -73,7 +73,7 @@ function ChipButton({ item, onClick }: { item: PlannerItem; onClick: () => void 
 		<button
 			type="button"
 			onClick={e => { e.stopPropagation(); onClick() }}
-			className="text-left text-xs px-2 py-1 rounded truncate border-0 cursor-pointer text-white hover:brightness-110"
+			className="text-left text-xs px-2 py-1 rounded truncate border-0 cursor-pointer text-on-accent hover:brightness-110"
 			style={{ background: t.color ?? '#525252' }}
 			title={t.title}
 		>
