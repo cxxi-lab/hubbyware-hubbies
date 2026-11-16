@@ -1,0 +1,11 @@
+{
+	"collection": "category",
+	"version": 1,
+	"fields": {
+		"name": { "type": "string", "max": 255, "required": true },
+		"color": { "type": "string", "max": 20, "required": true }
+	},
+	"indexes": [
+		{ "fields": [["name", 1]] }
+	]
+}
