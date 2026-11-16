@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { faTrash } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { errorMessage } from '@cxxi-lab/hub-sdk'
+import { errorMessage } from '@cxxi-lab/hubbyware-sdk'
 import { createClient, deleteClient, updateClient, type Client, type ClientInput } from '../api/business'
 import { ModalShell } from './ModalShell'
 import {

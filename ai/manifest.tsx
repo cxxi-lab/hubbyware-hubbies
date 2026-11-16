@@ -1,13 +1,13 @@
 import { faMicrochip } from '@fortawesome/free-solid-svg-icons'
-import { describe, type ModuleManifest } from '@cxxi-lab/hub-sdk'
-import info from './module.json'
-import './module.css'
+import { describe, type HubbyManifest } from '@cxxi-lab/hubbyware-sdk'
+import info from './hubby.json'
+import './hubby.css'
 
 /**
  * Local AI tools, driven by the AI engine (Window > Toggle AI Engine). Empty for now:
- * the Chatbot moved to the Private (video) module. No server counterpart.
+ * the Chatbot moved to the Private (video) hubby. No server counterpart.
  */
-export const aiManifest: ModuleManifest = {
+export const aiManifest: HubbyManifest = {
 	id: 'ai',
 	...describe(info),
 	icon: faMicrochip,

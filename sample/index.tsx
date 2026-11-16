@@ -1,12 +1,12 @@
 import { faCircleInfo, faFlask } from '@fortawesome/free-solid-svg-icons'
-import { defineModule } from '@cxxi-lab/hub-sdk/frame'
+import { defineHubby } from '@cxxi-lab/hubbyware-sdk/frame'
 import { Notes } from './pages/Notes'
 import { About } from './pages/About'
-import './module.css'
+import './hubby.css'
 
-// Hubby Lab: the first hubby running isolated (docs/plan-module-architecture.md § 4 ter). Its pages
-// make its navigation (the host builds it); it only knows @cxxi-lab/hub-sdk/frame and @cxxi-lab/hub-ui.
-export default defineModule({
+// Hubby Lab: the first hubby running isolated (docs/plan-hubby-architecture.md § 4 ter). Its pages
+// make its navigation (the host builds it); it only knows @cxxi-lab/hubbyware-sdk/frame and @cxxi-lab/hubbyware-ui.
+export default defineHubby({
 	pages: [
 		{ path: '/', component: Notes, title: 'Notes', icon: faFlask, nav: { section: 'Lab' } },
 		{ path: '/about', component: About, title: 'About', icon: faCircleInfo, nav: { section: 'Lab' } }

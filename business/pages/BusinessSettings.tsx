@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState, type FormEvent } from 'react'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { errorMessage } from '@cxxi-lab/hub-sdk'
+import { errorMessage } from '@cxxi-lab/hubbyware-sdk'
 import {
 	fetchBankAccounts,
 	fetchSettings,

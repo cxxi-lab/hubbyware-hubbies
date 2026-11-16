@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { faCopy, faPlus } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { errorMessage } from '@cxxi-lab/hub-sdk'
+import { errorMessage } from '@cxxi-lab/hubbyware-sdk'
 import { duplicateInvoice, fetchInvoices, type InvoiceSummary } from '../api/business'
 import { Money } from '../components/Money'
 import { InvoiceModal } from '../components/InvoiceModal'

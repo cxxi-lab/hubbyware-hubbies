@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { faPaperclip, faPaperPlane, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { errorMessage, useBackHandler } from '@cxxi-lab/hub-sdk'
+import { errorMessage, useBackHandler } from '@cxxi-lab/hubbyware-sdk'
 import { sendMessage, type MailAccount } from '../api/mail'
 import type { Draft } from '../lib/compose'
 import { fileSize } from '../lib/format'

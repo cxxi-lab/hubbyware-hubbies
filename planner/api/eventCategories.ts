@@ -1,4 +1,4 @@
-import { collection } from '@cxxi-lab/hub-sdk'
+import { collection } from '@cxxi-lab/hubbyware-sdk'
 
 // Planner's categories: its `category` collection (hubbies/planner/models/category.json).
 

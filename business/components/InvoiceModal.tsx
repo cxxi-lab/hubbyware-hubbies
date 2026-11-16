@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react'
 import { faArrowDown, faArrowUp, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { errorMessage } from '@cxxi-lab/hub-sdk'
+import { errorMessage } from '@cxxi-lab/hubbyware-sdk'
 import { Money } from './Money'
 import {
 	createInvoice,

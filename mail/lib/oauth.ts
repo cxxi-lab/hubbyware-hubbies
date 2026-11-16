@@ -1,4 +1,4 @@
-import { platform } from '@cxxi-lab/hub-sdk'
+import { platform } from '@cxxi-lab/hubbyware-sdk'
 import { finishOAuth, startOAuth, type MailAccount, type MailProvider } from '../api/mail'
 
 /**

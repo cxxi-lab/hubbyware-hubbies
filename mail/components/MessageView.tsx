@@ -5,7 +5,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import { faStar as faStarOutline } from '@fortawesome/free-regular-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { errorMessage, getApiBaseUrl, IconButton } from '@cxxi-lab/hub-sdk'
+import { errorMessage, getApiBaseUrl, IconButton } from '@cxxi-lab/hubbyware-sdk'
 import { fetchMessage, type BatchAction, type MailMessage } from '../api/mail'
 import { addressLabel, addressList, fileSize, fullDate } from '../lib/format'
 

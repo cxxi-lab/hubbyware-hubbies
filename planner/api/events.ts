@@ -1,4 +1,4 @@
-import { collection } from '@cxxi-lab/hub-sdk'
+import { collection } from '@cxxi-lab/hubbyware-sdk'
 import { fetchEventCategories, type EventCategory } from './eventCategories'
 
 // Planner's events: its `event` collection (hubbies/planner/models/event.json). `until` is the

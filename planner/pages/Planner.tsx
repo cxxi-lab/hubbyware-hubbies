@@ -8,7 +8,7 @@ import { EventModal } from '../components/EventModal'
 import { fetchEventCategories, type EventCategory } from '../api/eventCategories'
 import { fetchEvents, type PlannerEvent } from '../api/events'
 import type { PlannerItem } from '../lib/plannerItems'
-import { useBackHandler, useContributions, useMediaQuery, type TimelineItem } from '@cxxi-lab/hub-sdk'
+import { useBackHandler, useContributions, useMediaQuery, type TimelineItem } from '@cxxi-lab/hubbyware-sdk'
 import {
 	addDays,
 	addMonths,
@@ -68,7 +68,7 @@ export function Planner() {
 			.then(setEvents)
 			.catch(err => console.warn('[planner] events fetch failed', err))
 
-		// Pull dated items contributed by other modules (timeline capability) — the planner
+		// Pull dated items contributed by other hubbies (timeline capability) — the planner
 		// never imports them, it only calls their timeline contribution.
 		Promise.all(
 			contributions.map(c =>
@@ -139,15 +139,16 @@ export function Planner() {
 			setEventModal({ mode: 'edit', event: item.event, date: null })
 			return
 		}
-		// contributed item: open the module's own detail view in place if it provides one,
-		// otherwise deep-link to the item's home in its module.
-		const contributor = contributions.find(c => c.moduleId === item.item.moduleId)
+		// contributed item: open the hubby's own detail view in place if it provides one,
+		// otherwise deep-link to the item's home in its hubby.
+		// a hubby built before the rename (SDK 2) sets moduleId: read too until layer 5
+		const contributor = contributions.find(c => c.hubbyId === (item.item.hubbyId ?? item.item.moduleId))
 		if (contributor?.value.renderDetail) setDetailItem(item.item)
 		else navigate(item.item.href)
 	}
 
 	const detailContributor = detailItem
-		? contributions.find(c => c.moduleId === detailItem.moduleId)
+		? contributions.find(c => c.hubbyId === (detailItem.hubbyId ?? detailItem.moduleId))
 		: undefined
 
 	const phone = useMediaQuery('(width < 40rem)')

@@ -1,8 +1,8 @@
-import { collection } from '@cxxi-lab/hub-sdk'
+import { collection } from '@cxxi-lab/hubbyware-sdk'
 import { fetchProgram, positioned, type ProgramExerciseType } from './programs'
 
 // Workouts' sessions: its `session` collection (hubbies/workout/models/session.json). `date` is
-// the session's day (performed, else scheduled): kept by the module, the index the history and
+// the session's day (performed, else scheduled): kept by the hubby, the index the history and
 // the calendar query.
 
 export interface WorkoutSessionExercise {

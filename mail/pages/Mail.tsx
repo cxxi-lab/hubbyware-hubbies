@@ -3,7 +3,7 @@ import { faBan, faBoxArchive, faChevronDown, faPen, faEnvelope, faEnvelopeOpen, 
 import { faStar as faStarOutline } from '@fortawesome/free-regular-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useLocation, useNavigate, useSearchParams } from 'react-router'
-import { BottomBar, errorMessage, useBackHandler, useMediaQuery, type BottomBarTab } from '@cxxi-lab/hub-sdk'
+import { BottomBar, errorMessage, useBackHandler, useMediaQuery, type BottomBarTab } from '@cxxi-lab/hubbyware-sdk'
 import {
 	batchMessages, fetchAccounts, fetchMessages, syncAccount, syncFolder,
 	type BatchAction, type FolderRole, type MailAccount, type MailFolder, type MailMessage, type MailMessageSummary
@@ -122,7 +122,7 @@ export function Mail() {
 	// checks the folder with the provider at once instead of waiting for the next round.
 	const shown = useLocation().pathname === '/mail'
 	const navigate = useNavigate()
-	// back from the mailboxes' screen (Modules > Mail): what changed there
+	// back from the mailboxes' screen (Hubbies > Mail): what changed there
 	useEffect(() => { if (shown) reloadAccounts() }, [shown, reloadAccounts])
 	// a link to a folder (a notification: /mail?folder=<id>): open it, then drop the parameter
 	const [params, setParams] = useSearchParams()
@@ -260,8 +260,8 @@ export function Mail() {
 		}
 	}
 
-	// Mailboxes are managed on their own screen (Modules > Mail).
-	const manage = () => navigate('/modules/mail')
+	// Mailboxes are managed on their own screen (Hubbies > Mail).
+	const manage = () => navigate('/hubbies/mail')
 
 	if (accounts === null) {
 		return <div className="flex-1 flex items-center justify-center text-sm text-steel-400">{error ?? 'Loading…'}</div>

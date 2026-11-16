@@ -2,7 +2,7 @@ import { useEffect, useState, type FormEvent } from 'react'
 import { faGoogle, faMicrosoft, faYahoo } from '@fortawesome/free-brands-svg-icons'
 import { faArrowLeft, faArrowsRotate, faServer, faTrash, type IconDefinition } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { errorMessage, ConfirmationModal } from '@cxxi-lab/hub-sdk'
+import { errorMessage, ConfirmationModal } from '@cxxi-lab/hubbyware-sdk'
 import {
 	createAccount, deleteAccount, fetchProviders, updateAccount,
 	type AccountInput, type MailAccount, type MailEncryption, type MailProvider, type ProviderInfo

@@ -1,6 +1,6 @@
 import { faChevronDown, faChevronLeft, faChevronRight, faPlus, faSliders } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { Dropdown } from '@cxxi-lab/hub-sdk'
+import { Dropdown } from '@cxxi-lab/hubbyware-sdk'
 import type { PlannerView } from '../pages/Planner'
 
 interface Props {

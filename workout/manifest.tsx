@@ -1,15 +1,15 @@
 import { faChartLine, faClockRotateLeft, faDumbbell, faListCheck, faRepeat } from '@fortawesome/free-solid-svg-icons'
-import { describe, type ModuleManifest, type TimelineItem } from '@cxxi-lab/hub-sdk'
-import info from './module.json'
+import { describe, type HubbyManifest, type TimelineItem } from '@cxxi-lab/hubbyware-sdk'
+import info from './hubby.json'
 import { WorkoutsPrograms } from './pages/WorkoutsPrograms'
 import { WorkoutsHistory } from './pages/WorkoutsHistory'
 import { WorkoutsGreasingGroove } from './pages/WorkoutsGreasingGroove'
 import { WorkoutsStats } from './pages/WorkoutsStats'
 import { fetchSessions, type WorkoutSessionSummary } from './api/workoutSessions'
 import { WorkoutSessionModal } from './components/WorkoutSessionModal'
-import './module.css'
+import './hubby.css'
 
-export const workoutManifest: ModuleManifest = {
+export const workoutManifest: HubbyManifest = {
 	id: 'workout',
 	...describe(info),
 	icon: faDumbbell,
@@ -27,7 +27,7 @@ export const workoutManifest: ModuleManifest = {
 	],
 
 	// Planner's calendar: scheduled/performed sessions as dated items (the payload is only read
-	// back below, by this module).
+	// back below, by this hubby).
 	contributes: {
 		timeline: {
 			async items(start, end) {
@@ -38,6 +38,8 @@ export const workoutManifest: ModuleManifest = {
 						id: `workout:${s.id}`,
 						date: new Date((s.performedAt ?? s.scheduledAt) as string),
 						title: s.programLabel,
+						hubbyId: 'workout',
+						// its SDK 2 name, for a Planner built before the rename (until layer 5)
 						moduleId: 'workout',
 						href: '/workouts/history',
 						color: '#059669',

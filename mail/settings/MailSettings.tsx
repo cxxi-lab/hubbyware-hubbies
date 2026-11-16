@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPen, faPlus, faTriangleExclamation } from '@fortawesome/free-solid-svg-icons'
-import { errorMessage } from '@cxxi-lab/hub-sdk'
+import { errorMessage } from '@cxxi-lab/hubbyware-sdk'
 import { fetchAccounts, type MailAccount } from '../api/mail'
 import { AccountModal, PROVIDERS } from '../components/AccountModal'
 import { listDate } from '../lib/format'
 
-/** Mail's own settings (Modules > Mail): its mailboxes, added, edited and removed here. */
+/** Mail's own settings (Hubbies > Mail): its mailboxes, added, edited and removed here. */
 export function MailSettings() {
 	const [accounts, setAccounts] = useState<MailAccount[] | null>(null)
 	const [error, setError] = useState<string | null>(null)

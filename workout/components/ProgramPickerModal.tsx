@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useBackHandler } from '@cxxi-lab/hub-sdk'
+import { useBackHandler } from '@cxxi-lab/hubbyware-sdk'
 import { faXmark } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { fetchPrograms, type ProgramSummary } from '../api/programs'

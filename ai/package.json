@@ -1,21 +1,21 @@
 {
-	"name": "@cxxi-lab/hub-module-ai",
+	"name": "@cxxi-lab/hubby-ai",
 	"version": "0.0.0",
 	"private": true,
 	"type": "module",
-	"description": "hub module: AI Engine — Local AI tools",
+	"description": "hubby: AI Engine — Local AI tools",
 	"license": "MIT",
 	"scripts": {
-		"build": "hub-module build",
+		"build": "hubby build",
 		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
 		"@fortawesome/free-solid-svg-icons": "^7.2.0"
 	},
 	"devDependencies": {
-		"@cxxi-lab/hub-module-cli": "^0.2.0",
-		"@cxxi-lab/hub-sdk": "^2.0.0",
-		"@cxxi-lab/hub-ui": "^0.3.0",
+		"@cxxi-lab/hubby-cli": "^0.3.0",
+		"@cxxi-lab/hubbyware-sdk": "^3.0.0",
+		"@cxxi-lab/hubbyware-ui": "^0.5.0",
 		"@types/react": "^19.2.14",
 		"@types/react-dom": "^19.2.3",
 		"typescript": "^5.3.3"

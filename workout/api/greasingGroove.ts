@@ -1,4 +1,4 @@
-import { collection } from '@cxxi-lab/hub-sdk'
+import { collection } from '@cxxi-lab/hubbyware-sdk'
 
 // Greasing Groove's ideas: Workouts' `idea` collection (hubbies/workout/models/idea.json).
 

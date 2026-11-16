@@ -1,4 +1,4 @@
-import { api, type ListResponse, type SingleResponse } from '@cxxi-lab/hub-sdk'
+import { api, type ListResponse, type SingleResponse } from '@cxxi-lab/hubbyware-sdk'
 
 export type MailProvider = 'yahoo' | 'gmail' | 'microsoft' | 'custom'
 /** password (an app password at Yahoo) or OAuth (Gmail, Microsoft) */

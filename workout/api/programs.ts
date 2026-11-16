@@ -1,4 +1,4 @@
-import { collection } from '@cxxi-lab/hub-sdk'
+import { collection } from '@cxxi-lab/hubbyware-sdk'
 
 // Workouts' programs: its `program` collection (hubbies/workout/models/program.json), through the
 // hubbies' generic API.

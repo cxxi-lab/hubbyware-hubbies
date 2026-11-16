@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { errorMessage } from '@cxxi-lab/hub-sdk'
+import { errorMessage } from '@cxxi-lab/hubbyware-sdk'
 import { fetchClients, type Client } from '../api/business'
 import { ClientModal } from '../components/ClientModal'
 import { countryName, primaryButtonClass } from '../components/fields'

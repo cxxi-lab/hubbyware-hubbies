@@ -1,5 +1,5 @@
 import { useEffect, useState, type FormEvent } from 'react'
-import { useBackHandler } from '@cxxi-lab/hub-sdk'
+import { useBackHandler } from '@cxxi-lab/hubbyware-sdk'
 import { faTrash, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { createEvent, deleteEvent, updateEvent, type EventWriteInput, type PlannerEvent } from '../api/events'

@@ -1,4 +1,4 @@
-import { ApiError, collection } from '@cxxi-lab/hub-sdk'
+import { ApiError, collection } from '@cxxi-lab/hubbyware-sdk'
 import { formatIban, isValidBic, isValidIban, normalizeIban } from '../lib/iban'
 import { lineTotals, quantityToMilli } from '../lib/money'
 import { vatRule, vatZone } from '../lib/vat'

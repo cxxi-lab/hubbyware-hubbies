@@ -1,10 +1,10 @@
 import { faCalendarDays } from '@fortawesome/free-solid-svg-icons'
-import { describe, type ModuleManifest } from '@cxxi-lab/hub-sdk'
-import info from './module.json'
+import { describe, type HubbyManifest } from '@cxxi-lab/hubbyware-sdk'
+import info from './hubby.json'
 import { Planner } from './pages/Planner'
-import './module.css'
+import './hubby.css'
 
-export const plannerManifest: ModuleManifest = {
+export const plannerManifest: HubbyManifest = {
 	id: 'planner',
 	...describe(info),
 	icon: faCalendarDays,

@@ -1,5 +1,5 @@
 {
-	"name": "@cxxi-lab/hub-modules",
+	"name": "@cxxi-lab/hubbyware-hubbies",
 	"private": true,
 	"description": "hub's official modules, one folder each (docs: README.md)",
 	"workspaces": [

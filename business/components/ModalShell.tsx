@@ -1,7 +1,7 @@
 import { useEffect, type FormEvent, type ReactNode } from 'react'
 import { faXmark } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { useBackHandler } from '@cxxi-lab/hub-sdk'
+import { useBackHandler } from '@cxxi-lab/hubbyware-sdk'
 
 interface Props {
 	title: string

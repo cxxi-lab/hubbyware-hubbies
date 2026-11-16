@@ -1,12 +1,12 @@
 import { faBriefcase, faFileInvoice, faGear, faUsers } from '@fortawesome/free-solid-svg-icons'
-import { describe, type ModuleManifest } from '@cxxi-lab/hub-sdk'
-import info from './module.json'
+import { describe, type HubbyManifest } from '@cxxi-lab/hubbyware-sdk'
+import info from './hubby.json'
 import { BusinessInvoices } from './pages/BusinessInvoices'
 import { BusinessClients } from './pages/BusinessClients'
 import { BusinessSettings } from './pages/BusinessSettings'
-import './module.css'
+import './hubby.css'
 
-export const businessManifest: ModuleManifest = {
+export const businessManifest: HubbyManifest = {
 	id: 'business',
 	...describe(info),
 	icon: faBriefcase,

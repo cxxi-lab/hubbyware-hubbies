@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { faPlus, faStopwatch, faTrash, faWindowRestore } from '@fortawesome/free-solid-svg-icons'
-import { Button, Modal } from '@cxxi-lab/hub-ui'
-import { call, collection, nav, notifications, settings, useInit, usePath, type Doc } from '@cxxi-lab/hub-sdk/frame'
+import { Button, Modal } from '@cxxi-lab/hubbyware-ui'
+import { call, collection, nav, notifications, settings, useInit, usePath, type Doc } from '@cxxi-lab/hubbyware-sdk/frame'
 
 const notes = collection('note')
 
@@ -52,7 +52,7 @@ export function Notes() {
 		<div className="min-h-screen flex flex-col gap-4 p-4 text-steel-100">
 			<header className="flex items-center gap-2">
 				<h1 className="flex-1 m-0 text-lg font-semibold text-white">Notes</h1>
-				<span className="text-xs text-steel-500">{init ? `${init.module} · ${init.phone ? 'phone' : 'desktop'} · path ${path}` : 'waiting for the host…'}</span>
+				<span className="text-xs text-steel-500">{init ? `${init.hubby} · ${init.phone ? 'phone' : 'desktop'} · path ${path}` : 'waiting for the host…'}</span>
 			</header>
 
 			<section className="flex gap-2">
