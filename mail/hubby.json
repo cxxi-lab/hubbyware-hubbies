@@ -1,6 +1,6 @@
 {
 	"id": "mail",
-	"version": "1.11.2",
+	"version": "1.12.0",
 	"sdk": "^3.0.0",
 	"label": "Mail",
 	"description": "Your mailboxes in one place",
