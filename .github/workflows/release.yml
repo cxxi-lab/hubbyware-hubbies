@@ -1,6 +1,6 @@
 name: release
 
-# Each module released on its own (cxxi-lab/hub-ui's reusable workflow): its version bumped from the
+# Each module released on its own (cxxi-lab/hubbyware-ui's reusable workflow): its version bumped from the
 # commits touching its folder since its last tag (<id>-v<version>), built, signed, uploaded. One at a
 # time: each pushes its version commit and tag. A module none of whose commits says feat/fix/BREAKING
 # releases nothing.
@@ -18,7 +18,7 @@ jobs:
       fail-fast: false
       matrix:
         module: [ai, business, mail, planner, sample, workout]
-    uses: cxxi-lab/hub-ui/.github/workflows/module-release.yml@main
+    uses: cxxi-lab/hubbyware-ui/.github/workflows/module-release.yml@main
     with:
       path: ${{ matrix.module }}
       tag-prefix: ${{ matrix.module }}-v

@@ -1,6 +1,6 @@
 # hub module: Mail
 
-Your mailboxes in one place. An official [hub](https://github.com/cxxi-lab/hub-apps) module (runs in the app, through the SDK).
+Your mailboxes in one place. An official [hub](https://github.com/cxxi-lab/hubbyware-client) module (runs in the app, through the SDK).
 
 - `module.json`: its id, version, SDK range, scopes, the capabilities it uses
 - `models/`: its collections' models (the server enforces them; the app seals the fields they mark encrypted)
@@ -8,8 +8,8 @@ Your mailboxes in one place. An official [hub](https://github.com/cxxi-lab/hub-a
 
 ## Develop
 
-Clone it next to the apps (`~/dev/hub/modules/mail`, `~/dev/hub/apps`): the app's development build loads
-the modules' sources from `../../modules` (or `HUB_MODULES_DIR`).
+Its checkout sits next to the apps (`~/dev/hubbyware/repos/hubbies/mail`, `~/dev/hubbyware/repos/client`): the app's development build loads
+the modules' sources from `../../hubbies` (or `HUB_MODULES_DIR`).
 
 ```sh
 npm install

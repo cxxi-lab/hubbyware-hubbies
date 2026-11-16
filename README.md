@@ -21,7 +21,7 @@ npm run build -w planner
 
 **Releases** (`.github/workflows/release.yml`): on a push to `main`, each module whose folder has a
 `feat:` / `fix:` / `perf:` / `BREAKING` commit since its last tag (`<id>-v<version>`) is bumped,
-built, signed and uploaded, one after the other (cxxi-lab/hub-ui's reusable workflow). Prefix the
+built, signed and uploaded, one after the other (cxxi-lab/hubbyware-ui's reusable workflow). Prefix the
 commits with the module's id when it helps: `feat(planner): …`.
 
 Their history before 2026-11-16 is that of their former repositories (`cxxi-lab/hub-module-<id>`,

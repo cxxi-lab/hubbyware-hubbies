@@ -1,6 +1,6 @@
 # hub module: Planner
 
-Calendar and agenda. An official [hub](https://github.com/cxxi-lab/hub-apps) module (runs in the app, through the SDK).
+Calendar and agenda. An official [hub](https://github.com/cxxi-lab/hubbyware-client) module (runs in the app, through the SDK).
 
 - `module.json`: its id, version, SDK range, scopes, the capabilities it uses
 - `models/`: its collections' models (the server enforces them; the app seals the fields they mark encrypted)
@@ -8,8 +8,8 @@ Calendar and agenda. An official [hub](https://github.com/cxxi-lab/hub-apps) mod
 
 ## Develop
 
-Clone it next to the apps (`~/dev/hub/modules/planner`, `~/dev/hub/apps`): the app's development build loads
-the modules' sources from `../../modules` (or `HUB_MODULES_DIR`).
+Its checkout sits next to the apps (`~/dev/hubbyware/repos/hubbies/planner`, `~/dev/hubbyware/repos/client`): the app's development build loads
+the modules' sources from `../../hubbies` (or `HUB_MODULES_DIR`).
 
 ```sh
 npm install
