@@ -1,7 +1,7 @@
 {
 	"id": "mail",
 	"version": "1.11.0",
-	"sdk": "^1.11.0",
+	"sdk": "^1.11.0 || ^2.0.0",
 	"label": "Mail",
 	"description": "Your mailboxes in one place",
 	"icon": "envelope",
