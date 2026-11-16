@@ -1,0 +1,24 @@
+{
+  "collection": "program",
+  "version": 2,
+  "fields": {
+    "label": { "type": "string", "max": 255, "required": true },
+    "exercises": {
+      "type": "array",
+      "maxItems": 200,
+      "items": {
+        "type": "object",
+        "fields": {
+          "type": { "type": "enum", "values": ["warmup", "training"], "required": true },
+          "label": { "type": "string", "max": 255, "required": true },
+          "series": { "type": "string", "max": 64, "default": "" },
+          "reps": { "type": "string", "max": 64, "default": "" },
+          "tempo": { "type": "string", "max": 255 },
+          "note": { "type": "text", "max": 10000, "encrypted": true },
+          "position": { "type": "int", "min": 0, "default": 0 }
+        }
+      }
+    }
+  },
+  "indexes": []
+}

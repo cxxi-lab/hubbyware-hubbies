@@ -1,0 +1,38 @@
+{
+  "collection": "session",
+  "version": 2,
+  "fields": {
+    "programId": { "type": "ref", "collection": "program", "onDelete": "nullify" },
+    "programLabel": { "type": "string", "max": 255, "required": true },
+    "scheduledAt": { "type": "datetime" },
+    "performedAt": { "type": "datetime" },
+    "date": { "type": "datetime", "description": "performedAt, else scheduledAt: the session's day in the calendar and the history" },
+    "note": { "type": "text", "max": 10000, "encrypted": true },
+    "exercises": {
+      "type": "array",
+      "maxItems": 200,
+      "items": {
+        "type": "object",
+        "fields": {
+          "type": { "type": "enum", "values": ["warmup", "training"], "required": true },
+          "position": { "type": "int", "min": 0, "default": 0 },
+          "label": { "type": "string", "max": 255, "required": true },
+          "plannedSeries": { "type": "string", "max": 64, "default": "" },
+          "plannedReps": { "type": "string", "max": 64, "default": "" },
+          "plannedTempo": { "type": "string", "max": 255 },
+          "plannedNote": { "type": "text", "max": 10000, "encrypted": true },
+          "actualSeries": { "type": "string", "max": 64, "default": "" },
+          "actualReps": { "type": "string", "max": 64, "default": "" },
+          "actualTempo": { "type": "string", "max": 255 },
+          "actualNote": { "type": "text", "max": 10000, "encrypted": true },
+          "isExtra": { "type": "bool", "default": false },
+          "skipped": { "type": "bool", "default": false }
+        }
+      }
+    }
+  },
+  "indexes": [
+    { "fields": [["date", 1]] },
+    { "fields": [["programId", 1]] }
+  ]
+}

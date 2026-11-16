@@ -1,0 +1,12 @@
+{
+  "collection": "idea",
+  "version": 2,
+  "fields": {
+    "label": { "type": "string", "max": 255, "required": true },
+    "note": { "type": "text", "max": 10000, "encrypted": true },
+    "position": { "type": "int", "min": 0, "default": 0 }
+  },
+  "indexes": [
+    { "fields": [["position", 1]] }
+  ]
+}
