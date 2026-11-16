@@ -39,8 +39,6 @@ export const workoutManifest: HubbyManifest = {
 						date: new Date((s.performedAt ?? s.scheduledAt) as string),
 						title: s.programLabel,
 						hubbyId: 'workout',
-						// its SDK 2 name, for a Planner built before the rename (until layer 5)
-						moduleId: 'workout',
 						href: '/workouts/history',
 						color: '#059669',
 						payload: s

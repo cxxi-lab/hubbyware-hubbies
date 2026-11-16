@@ -141,14 +141,13 @@ export function Planner() {
 		}
 		// contributed item: open the hubby's own detail view in place if it provides one,
 		// otherwise deep-link to the item's home in its hubby.
-		// a hubby built before the rename (SDK 2) sets moduleId: read too until layer 5
-		const contributor = contributions.find(c => c.hubbyId === (item.item.hubbyId ?? item.item.moduleId))
+		const contributor = contributions.find(c => c.hubbyId === item.item.hubbyId)
 		if (contributor?.value.renderDetail) setDetailItem(item.item)
 		else navigate(item.item.href)
 	}
 
 	const detailContributor = detailItem
-		? contributions.find(c => c.hubbyId === (detailItem.hubbyId ?? detailItem.moduleId))
+		? contributions.find(c => c.hubbyId === detailItem.hubbyId)
 		: undefined
 
 	const phone = useMediaQuery('(width < 40rem)')
