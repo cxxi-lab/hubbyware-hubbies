@@ -1,0 +1,17 @@
+{
+	"id": "mail",
+	"version": "1.11.1",
+	"sdk": "^1.11.0 || ^2.0.0",
+	"label": "Mail",
+	"description": "Your mailboxes in one place",
+	"icon": "envelope",
+	"supports": [
+		"notifications"
+	],
+	"capabilities": [
+		"mail"
+	],
+	"scopes": [
+		"app:notifications"
+	]
+}
