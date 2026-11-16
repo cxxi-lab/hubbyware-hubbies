@@ -1,6 +1,6 @@
 {
 	"id": "business",
-	"version": "1.6.2",
+	"version": "1.7.0",
 	"sdk": "^3.0.0",
 	"label": "Business",
 	"description": "Invoices and clients",
