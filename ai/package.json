@@ -3,7 +3,7 @@
 	"version": "0.0.0",
 	"private": true,
 	"type": "module",
-	"description": "hub module: AI Engine \u2014 Local AI tools",
+	"description": "hub module: AI Engine — Local AI tools",
 	"license": "MIT",
 	"scripts": {
 		"build": "hub-module build",
@@ -13,9 +13,9 @@
 		"@fortawesome/free-solid-svg-icons": "^7.2.0"
 	},
 	"devDependencies": {
-		"@cxxi-lab/hub-module-cli": "^0.1.0",
-		"@cxxi-lab/hub-sdk": "^1.12.0",
-		"@cxxi-lab/hub-ui": "^0.1.0",
+		"@cxxi-lab/hub-module-cli": "^0.2.0",
+		"@cxxi-lab/hub-sdk": "^2.0.0",
+		"@cxxi-lab/hub-ui": "^0.3.0",
 		"@types/react": "^19.2.14",
 		"@types/react-dom": "^19.2.3",
 		"typescript": "^5.3.3"

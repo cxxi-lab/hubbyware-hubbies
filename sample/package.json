@@ -1,9 +1,9 @@
 {
-	"name": "@cxxi-lab/hub-module-proto",
+	"name": "@cxxi-lab/hub-module-sample",
 	"version": "0.0.0",
 	"private": true,
 	"type": "module",
-	"description": "hub module: Hubby Lab \u2014 The first isolated hubby: a few notes, in a sandboxed frame",
+	"description": "hub module: Hubby Lab — The first isolated hubby: a few notes, in a sandboxed frame",
 	"license": "UNLICENSED",
 	"scripts": {
 		"build": "hub-module build",
@@ -16,9 +16,9 @@
 		"react-dom": "^19.2.4"
 	},
 	"devDependencies": {
-		"@cxxi-lab/hub-module-cli": "^0.1.0",
-		"@cxxi-lab/hub-sdk": "^1.12.0",
-		"@cxxi-lab/hub-ui": "^0.1.0",
+		"@cxxi-lab/hub-module-cli": "^0.2.0",
+		"@cxxi-lab/hub-sdk": "^2.0.0",
+		"@cxxi-lab/hub-ui": "^0.3.0",
 		"@types/react": "^19.2.14",
 		"@types/react-dom": "^19.2.3",
 		"typescript": "^5.3.3"

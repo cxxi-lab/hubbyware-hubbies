@@ -3,7 +3,7 @@
 	"version": "0.0.0",
 	"private": true,
 	"type": "module",
-	"description": "hub module: Business \u2014 Invoices and clients",
+	"description": "hub module: Business — Invoices and clients",
 	"license": "MIT",
 	"scripts": {
 		"build": "hub-module build",

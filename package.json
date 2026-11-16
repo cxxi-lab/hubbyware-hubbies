@@ -1,0 +1,17 @@
+{
+	"name": "@cxxi-lab/hub-modules",
+	"private": true,
+	"description": "hub's official modules, one folder each (docs: README.md)",
+	"workspaces": [
+		"ai",
+		"business",
+		"mail",
+		"planner",
+		"sample",
+		"workout"
+	],
+	"scripts": {
+		"typecheck": "npm run typecheck --workspaces",
+		"build": "npm run build --workspaces"
+	}
+}

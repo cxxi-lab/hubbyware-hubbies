@@ -3,7 +3,7 @@
 	"version": "0.0.0",
 	"private": true,
 	"type": "module",
-	"description": "hub module: Planner \u2014 Calendar and agenda",
+	"description": "hub module: Planner — Calendar and agenda",
 	"license": "MIT",
 	"scripts": {
 		"build": "hub-module build",
@@ -16,9 +16,9 @@
 		"react-router": "^7.18.3"
 	},
 	"devDependencies": {
-		"@cxxi-lab/hub-module-cli": "^0.1.0",
-		"@cxxi-lab/hub-sdk": "^1.12.0",
-		"@cxxi-lab/hub-ui": "^0.2.0",
+		"@cxxi-lab/hub-module-cli": "^0.2.0",
+		"@cxxi-lab/hub-sdk": "^2.0.0",
+		"@cxxi-lab/hub-ui": "^0.3.0",
 		"@types/react": "^19.2.14",
 		"@types/react-dom": "^19.2.3",
 		"typescript": "^5.3.3"
