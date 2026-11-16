@@ -1,6 +1,6 @@
 {
 	"id": "ai",
-	"version": "1.3.0",
+	"version": "1.3.1",
 	"sdk": "^1.1.0 || ^2.0.0",
 	"label": "AI Engine",
 	"description": "Local AI tools",
