@@ -1,0 +1,26 @@
+{
+	"collection": "client",
+	"version": 1,
+	"fields": {
+		"label": { "type": "string", "max": 100, "required": true, "encrypted": "equality", "description": "the short internal handle, unique (through its blind index)" },
+		"name": { "type": "string", "max": 255, "required": true, "encrypted": true },
+		"siren": { "type": "string", "max": 9, "pattern": "^\\d{9}$", "encrypted": true },
+		"siret": { "type": "string", "max": 14, "pattern": "^\\d{14}$", "encrypted": true },
+		"vatNumber": { "type": "string", "max": 32, "encrypted": true },
+		"email": { "type": "string", "max": 255, "format": "email", "encrypted": "equality" },
+		"address": { "type": "string", "max": 255, "encrypted": true },
+		"zipcode": { "type": "string", "max": 16, "encrypted": true },
+		"city": { "type": "string", "max": 128, "encrypted": true },
+		"country": { "type": "string", "max": 2, "pattern": "^[A-Z]{2}$", "default": "FR" },
+		"deliveryAddress": { "type": "string", "max": 255, "encrypted": true },
+		"deliveryZipcode": { "type": "string", "max": 16, "encrypted": true },
+		"deliveryCity": { "type": "string", "max": 128, "encrypted": true },
+		"deliveryCountry": { "type": "string", "max": 2, "pattern": "^[A-Z]{2}$" },
+		"currency": { "type": "string", "max": 3, "default": "EUR" },
+		"qontoClientId": { "type": "string", "max": 64 }
+	},
+	"indexes": [
+		{ "fields": [["label", 1]], "unique": true },
+		{ "fields": [["email", 1]] }
+	]
+}

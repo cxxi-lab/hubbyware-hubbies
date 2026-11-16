@@ -1,0 +1,11 @@
+{
+	"id": "business",
+	"version": "1.6.2",
+	"sdk": "^2.0.0",
+	"label": "Business",
+	"description": "Invoices and clients",
+	"icon": "briefcase",
+	"supports": [
+		"amounts"
+	]
+}
