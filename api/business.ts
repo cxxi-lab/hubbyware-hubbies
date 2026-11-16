@@ -228,8 +228,15 @@ const SETTINGS_DEFAULTS: SettingsFields = {
 	paymentTermDays: 30, latePenaltyRate: 0, defaultBankAccountId: null
 }
 
+/**
+ * Made under a fixed id: two devices making it offline make the same document (their fields
+ * merge) instead of two. One made before (another id) is kept: the oldest wins.
+ */
+const SETTINGS_ID = '00000000-0000-7000-8000-000000000001'
+
 async function settingsDocument() {
-	return (await settingsStore.find({ limit: 1 })).data[0] ?? settingsStore.create(SETTINGS_DEFAULTS)
+	const all = await settingsStore.findAll({ sort: '_createdAt' })
+	return all.find(d => d.id === SETTINGS_ID) ?? all[0] ?? settingsStore.createWithId(SETTINGS_ID, SETTINGS_DEFAULTS)
 }
 
 function settingsOf(d: SettingsFields & { _updatedAt: string }): BusinessSettings {
