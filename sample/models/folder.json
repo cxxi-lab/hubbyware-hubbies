@@ -1,0 +1,11 @@
+{
+  "collection": "folder",
+  "version": 1,
+  "fields": {
+    "name": { "type": "string", "max": 80, "required": true },
+    "color": { "type": "string", "format": "hex-color" }
+  },
+  "indexes": [
+    { "fields": [["name", 1]], "unique": true }
+  ]
+}

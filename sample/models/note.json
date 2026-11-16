@@ -1,0 +1,22 @@
+{
+  "collection": "note",
+  "version": 2,
+  "fields": {
+    "title": { "type": "string", "max": 200, "required": true },
+    "body": { "type": "text", "encrypted": true },
+    "contact": { "type": "string", "format": "email", "encrypted": "equality" },
+    "folderId": { "type": "ref", "collection": "folder", "onDelete": "nullify" },
+    "tags": { "type": "array", "items": { "type": "string", "max": 40 }, "maxItems": 30 },
+    "pinned": { "type": "bool", "default": false },
+    "priority": { "type": "enum", "values": ["low", "normal", "high"], "default": "normal" },
+    "dueAt": { "type": "datetime" },
+    "amount": { "type": "decimal", "scale": 2 }
+  },
+  "indexes": [
+    { "fields": [["pinned", -1], ["_updatedAt", -1]] },
+    { "fields": [["folderId", 1]] },
+    { "fields": [["priority", 1], ["dueAt", 1]] },
+    { "fields": [["tags", 1]] },
+    { "fields": [["contact", 1]] }
+  ]
+}
