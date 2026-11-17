@@ -1,7 +1,7 @@
 {
 	"id": "planner",
 	"version": "1.6.1",
-	"sdk": "^3.0.0",
+	"sdk": "^3.2.0",
 	"label": "Planner",
 	"description": "Calendar and agenda",
 	"icon": "calendar-days"

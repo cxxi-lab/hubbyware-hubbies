@@ -1,7 +1,7 @@
 {
 	"id": "business",
 	"version": "1.7.1",
-	"sdk": "^3.0.0",
+	"sdk": "^3.2.0",
 	"label": "Business",
 	"description": "Invoices and clients",
 	"icon": "briefcase",
