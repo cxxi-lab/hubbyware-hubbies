@@ -1,0 +1,9 @@
+{
+	"id": "file-sharing",
+	"version": "0.0.0",
+	"sdk": "^3.0.0",
+	"label": "File Sharing",
+	"description": "Send and receive files",
+	"icon": "share-nodes",
+	"isolated": true
+}

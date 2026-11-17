@@ -1,15 +1,19 @@
-# hub-hubbies
+# hubbyware-hubbies
 
-hub's official hubbies, one folder each (`<id>/`: its `hubby.json`, its code, its models), in one
+Hubbyware's official hubbies, one folder each (`<id>/`: its `hubby.json`, its code, its models), in one
 npm workspace. The accounts' hubbies (`@<handle>/<name>`) live in their own repositories.
 
 ```
-ai/        AI Engine
-business/  Invoices and clients
-mail/      Mail
-planner/   Calendar and agenda
-sample/    the sample hubby (not published yet)
-workout/   Programs, sessions and stats
+ai/            AI Engine
+budget/        Expenses and accounts (coming soon)
+business/      Invoices and clients
+file-sharing/  Send and receive files (coming soon)
+mail/          Mail
+memo/          Notes and reminders (coming soon)
+music/         Your music library (coming soon)
+planner/       Calendar and agenda
+sample/        the sample hubby (restricted)
+workout/       Programs, sessions and stats
 ```
 
 ```sh

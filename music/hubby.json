@@ -1,0 +1,9 @@
+{
+	"id": "music",
+	"version": "0.0.0",
+	"sdk": "^3.0.0",
+	"label": "Music",
+	"description": "Your music library",
+	"icon": "music",
+	"isolated": true
+}

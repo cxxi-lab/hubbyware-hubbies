@@ -1,0 +1,9 @@
+{
+	"id": "budget",
+	"version": "0.0.0",
+	"sdk": "^3.0.0",
+	"label": "Budget",
+	"description": "Expenses and accounts",
+	"icon": "wallet",
+	"isolated": true
+}

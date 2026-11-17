@@ -17,7 +17,7 @@ jobs:
       max-parallel: 1
       fail-fast: false
       matrix:
-        hubby: [ai, business, mail, planner, sample, workout]
+        hubby: [ai, budget, business, file-sharing, mail, memo, music, planner, sample, workout]
     uses: cxxi-lab/hubbyware-ui/.github/workflows/hubby-release.yml@main
     with:
       path: ${{ matrix.hubby }}

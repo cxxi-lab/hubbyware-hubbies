@@ -1,0 +1,4 @@
+/* This hubby's utilities, from its own sources only, on the design tokens (the runtime brings the base). */
+@reference "@cxxi-lab/hubbyware-ui/theme.css";
+@import "tailwindcss/utilities.css" layer(utilities) source(none);
+@source "./";

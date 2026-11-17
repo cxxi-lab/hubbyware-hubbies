@@ -1,11 +1,15 @@
 {
 	"name": "@cxxi-lab/hubbyware-hubbies",
 	"private": true,
-	"description": "hub's official modules, one folder each (docs: README.md)",
+	"description": "Hubbyware's official hubbies, one folder each (docs: README.md)",
 	"workspaces": [
 		"ai",
+		"budget",
 		"business",
+		"file-sharing",
 		"mail",
+		"memo",
+		"music",
 		"planner",
 		"sample",
 		"workout"
