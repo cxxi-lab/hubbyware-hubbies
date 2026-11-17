@@ -1,6 +1,6 @@
 {
 	"id": "memo",
-	"version": "0.0.0",
+	"version": "0.1.0",
 	"sdk": "^3.0.0",
 	"label": "Memo",
 	"description": "Notes and reminders",
