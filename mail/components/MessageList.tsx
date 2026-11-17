@@ -180,7 +180,7 @@ export function MessageList({ messages, selectedId, loading, hasMore, onSelect, 
 										<FontAwesomeIcon icon={faPaperclip} className="text-[10px]" />
 									</span>
 								)}
-								<span className={`truncate text-sm ${m.seen ? 'text-steel-400' : 'text-steel-100'}`}>{m.subject || '(no subject)'}</span>
+								<span className={`truncate text-sm ${m.seen ? 'text-steel-100' : 'text-white'}`}>{m.subject || '(no subject)'}</span>
 							</span>
 							{m.snippet && <span className="truncate text-xs text-steel-500">{snippetText(m.snippet)}</span>}
 						</span>
