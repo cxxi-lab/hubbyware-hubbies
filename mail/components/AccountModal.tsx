@@ -139,7 +139,7 @@ function OAuthAccount({ provider, info, account, onBack, onClose, onSaved }: {
 		setBusy('connect')
 		setError(null)
 		try {
-			const connected = await connectWithOAuth(provider)
+			const connected = await connectWithOAuth(provider, info, account)
 			if (connected) onSaved()
 		}
 		catch (err) {
@@ -170,7 +170,7 @@ function OAuthAccount({ provider, info, account, onBack, onClose, onSaved }: {
 	const connectButton = (
 		<button type="button" onClick={connect} disabled={busy !== null || notSetUp} className={account ? secondaryButtonClass : primaryButtonClass}>
 			<FontAwesomeIcon icon={account ? faArrowsRotate : meta.icon} />
-			{busy === 'connect' ? 'Waiting for the provider…' : account ? 'Reconnect' : `Connect with ${meta.label}`}
+			{busy === 'connect' ? 'Finish in your browser…' : account ? 'Reconnect' : `Connect with ${meta.label}`}
 		</button>
 	)
 
@@ -203,9 +203,9 @@ function OAuthAccount({ provider, info, account, onBack, onClose, onSaved }: {
 						{account ? (
 							<>Connected as <span className="text-white">{account.email}</span> through {meta.label}. Reconnect when the provider asks for it again (expired or revoked access).</>
 						) : notSetUp ? (
-							<>{meta.label} needs an OAuth client registered for hub, not set up on the server yet.</>
+							<>{meta.label} needs an OAuth client registered for Hubbyware, not set up on the server yet.</>
 						) : (
-							<>{meta.label}&apos;s sign-in opens in a window: pick the mailbox, allow hub to read and send its mail, and it shows up here. No password is stored, only an access the provider can revoke.</>
+							<>{meta.label}&apos;s sign-in opens in your browser: pick the mailbox, allow Hubbyware to read and send its mail, then come back here. No password is stored, only an access the provider can revoke (Settings › Connections).</>
 						)}
 					</div>
 					{account && connectButton}

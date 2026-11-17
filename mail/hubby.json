@@ -1,7 +1,7 @@
 {
 	"id": "mail",
 	"version": "1.12.3",
-	"sdk": "^3.2.0",
+	"sdk": "^3.3.0",
 	"label": "Mail",
 	"description": "Your mailboxes in one place",
 	"icon": "envelope",
@@ -13,5 +13,14 @@
 	],
 	"scopes": [
 		"app:notifications"
-	]
+	],
+	"oauth": {
+		"google": [
+			"https://mail.google.com/"
+		],
+		"microsoft": [
+			"https://outlook.office.com/IMAP.AccessAsUser.All",
+			"https://outlook.office.com/SMTP.Send"
+		]
+	}
 }

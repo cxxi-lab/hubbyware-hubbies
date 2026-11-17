@@ -18,6 +18,8 @@ export interface MailEndpoints {
 export interface ProviderInfo {
 	id: MailProvider
 	auth: MailAuth
+	/** OAuth: the provider of its connections ('google', 'microsoft'); null: a password */
+	oauthProvider: string | null
 	/** false: an OAuth provider whose client is not set up on the server */
 	configured: boolean
 	/** null for custom: every endpoint is typed in */
@@ -43,6 +45,8 @@ export interface MailAccount extends MailEndpoints {
 	displayName: string | null
 	provider: MailProvider
 	auth: MailAuth
+	/** an OAuth account's connection at its provider (null: gone, connect it again) */
+	connection?: string | null
 	username: string
 	signature: string | null
 	appendToSent: boolean
@@ -150,14 +154,9 @@ export function deleteAccount(id: string) {
 }
 
 /** Folder list + Inbox, now. */
-/** Starts connecting an OAuth mailbox: the consent page, and the redirect address to catch. */
-export function startOAuth(provider: MailProvider) {
-	return api<SingleResponse<{ url: string, redirectUri: string }>>(`/api/cap/mail/oauth/${provider}/start`, json('POST')).then(r => r.data)
-}
-
-/** Ends it with what the provider sent back: adds the mailbox (or renews the one there). */
-export function finishOAuth(provider: MailProvider, code: string, state: string) {
-	return api<SingleResponse<MailAccount & { created: boolean }>>(`/api/cap/mail/oauth/${provider}/finish`, json('POST', { code, state })).then(r => r.data)
+/** Adds the mailbox of a connected account (or points the one there at it): it logs in with the connection. */
+export function addConnectedAccount(connection: string) {
+	return api<SingleResponse<MailAccount & { created: boolean }>>('/api/cap/mail/accounts/connected', json('POST', { connection })).then(r => r.data)
 }
 
 export function syncAccount(id: string) {
