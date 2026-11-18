@@ -1,12 +1,13 @@
 {
 	"id": "ai",
 	"version": "1.4.2",
-	"sdk": "^3.2.0",
+	"sdk": "^3.7.0",
 	"label": "AI Engine",
 	"description": "Local AI tools",
 	"icon": "microchip",
 	"local": true,
 	"requiresCapabilities": [
 		"companion"
-	]
+	],
+	"isolated": true
 }
