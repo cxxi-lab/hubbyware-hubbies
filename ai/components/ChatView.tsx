@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faArrowLeft, faArrowsRotate, faCopy, faStop } from '@fortawesome/free-solid-svg-icons'
-import { Button, Markdown } from '@cxxi-lab/hubbyware-ui'
+import { faArrowLeft, faArrowsRotate, faCopy, faPen, faStop, faTrash } from '@fortawesome/free-solid-svg-icons'
+import { Button, ConfirmationModal, Markdown } from '@cxxi-lab/hubbyware-ui'
 import type { MessageDoc } from '../lib/data'
 
 /**
@@ -27,7 +27,7 @@ function stats(m: MessageDoc): string | null {
 	return `${m.model ?? ''} · ${m.tokens} tokens · ${(m.tokens / m.seconds).toFixed(0)} t/s`
 }
 
-export function ChatView({ title, history, streaming, busy, error, readOnly, onSend, onStop, onRegenerate, onBack }: {
+export function ChatView({ title, history, streaming, busy, error, readOnly, onSend, onStop, onRegenerate, onBack, onRename, onRemove }: {
 	title: string | null
 	history: MessageDoc[]
 	streaming: Streaming | null
@@ -38,8 +38,13 @@ export function ChatView({ title, history, streaming, busy, error, readOnly, onS
 	onStop: () => void
 	onRegenerate: () => void
 	onBack?: () => void
+	/** the conversation open: renamed, deleted */
+	onRename?: (title: string) => void
+	onRemove?: () => void
 }) {
 	const [draft, setDraft] = useState('')
+	const [editing, setEditing] = useState<string | null>(null)
+	const [removing, setRemoving] = useState(false)
 	const end = useRef<HTMLDivElement>(null)
 	const shown = history.filter(m => m.role !== 'tool')
 	const last = shown.at(-1)
@@ -56,8 +61,27 @@ export function ChatView({ title, history, streaming, busy, error, readOnly, onS
 		<div className="flex-1 min-h-0 min-w-0 flex flex-col">
 			<header className="flex items-center gap-2 px-4 sm:px-6 py-3 border-b border-steel-800">
 				{onBack && <button type="button" aria-label="Back" onClick={onBack} className="bg-transparent border-0 p-1 text-steel-300 cursor-pointer"><FontAwesomeIcon icon={faArrowLeft} /></button>}
-				<h1 className="m-0 truncate text-base font-semibold text-white">{title ?? 'New chat'}</h1>
+				{editing !== null ? (
+					<input autoFocus value={editing} onChange={e => setEditing(e.target.value)}
+						onBlur={() => { if (editing.trim() && editing.trim() !== title) onRename?.(editing.trim()); setEditing(null) }}
+						onKeyDown={e => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); if (e.key === 'Escape') setEditing(null) }}
+						className="flex-1 min-w-0 rounded bg-steel-800 px-2 py-1 text-base font-semibold text-white outline-none ring-1 ring-primary-500" />
+				) : (
+					<h1 className="m-0 flex-1 min-w-0 truncate text-base font-semibold text-white">{title ?? 'New chat'}</h1>
+				)}
+				{onRename && editing === null && (
+					<button type="button" aria-label="Rename" onClick={() => setEditing(title ?? '')} className="shrink-0 bg-transparent border-0 p-1 text-xs text-steel-400 hover:text-white cursor-pointer"><FontAwesomeIcon icon={faPen} /></button>
+				)}
+				{onRemove && (
+					<button type="button" aria-label="Delete" onClick={() => setRemoving(true)} className="shrink-0 bg-transparent border-0 p-1 text-xs text-steel-400 hover:text-red-300 cursor-pointer"><FontAwesomeIcon icon={faTrash} /></button>
+				)}
 			</header>
+			{removing && onRemove && (
+				<ConfirmationModal title="Delete this conversation?" confirmLabel="Delete" confirmColor="danger" onClose={() => setRemoving(false)}
+					onConfirm={() => { setRemoving(false); onRemove() }}>
+					<p className="m-0 text-sm text-steel-200">“{title}” and its messages are deleted, on every device.</p>
+				</ConfirmationModal>
+			)}
 			<div className="flex-1 min-h-0 overflow-y-auto px-4 sm:px-6 py-4" data-testid="messages">
 				<div className="mx-auto max-w-3xl flex flex-col gap-4">
 					{shown.length === 0 && !streaming && (

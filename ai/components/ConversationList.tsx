@@ -9,7 +9,7 @@ import type { ConversationDoc } from '../lib/data'
  * a search in their titles; renamed, deleted.
  */
 
-function groupOf(iso: string, now = new Date()): string {
+export function groupOf(iso: string, now = new Date()): string {
 	const day = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime()
 	const days = Math.round((day(now) - day(new Date(iso))) / 86_400_000)
 	if (days <= 0) return 'Today'

@@ -1,15 +1,16 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router'
-import { ai, errorMessage, platform, useMediaQuery } from '@cxxi-lab/hubbyware-sdk'
-import { ConversationList } from '../components/ConversationList'
+import { ai, errorMessage, nav, platform, useAppState } from '@cxxi-lab/hubbyware-sdk'
+import { ConversationList, groupOf } from '../components/ConversationList'
 import { ChatView, type Streaming } from '../components/ChatView'
 import { addMessage, conversations, listConversations, messages, messagesOf, newConversation, removeConversation, type ConversationDoc, type MessageDoc } from '../lib/data'
 import { transcript } from '../lib/transcript'
 import { proposeTitle } from '../lib/title'
 
 /**
- * The AI hubby's chat (client docs/plan-ia-chat.md, phase 1): its conversations in a column (on a
- * phone, the list or the conversation), the one open at /ai/c/<id>; its answers from a model on this
+ * The AI hubby's chat (client docs/plan-ia-chat.md, phase 1): its conversations in the app's column
+ * (its live navigation, by date, New chat, a search; on a phone, where the bottom bar can't hold them,
+ * in this page: the list or the conversation), the one open at /ai/c/<id>; its answers from a model on this
  * device (`ai.chat`), saved once done — an answer stopped midway is kept as it is.
  */
 
@@ -20,7 +21,8 @@ const MAX_ANSWER_TOKENS = 2_048
 export function ChatApp() {
 	const { pathname } = useLocation()
 	const navigate = useNavigate()
-	const phone = useMediaQuery('(width < 40rem)')
+	// the app's phone layout (not this frame's width: the app's column narrows it)
+	const { phone } = useAppState()
 	const readOnly = !platform.capabilities.localAi
 	const active = /^\/ai\/c\/([^/]+)/.exec(pathname)?.[1] ?? null
 
@@ -50,6 +52,15 @@ export function ChatApp() {
 
 	const conversation = list?.find(c => c.id === active) ?? null
 
+	// the conversations in the app's column (not on a phone: they are in this page there)
+	useEffect(() => {
+		if (phone) { nav.clearItems(); return }
+		nav.setItems((list ?? []).map(c => ({ path: `/c/${c.id}`, label: c.title, section: groupOf(c.lastMessageAt) })), {
+			action: { label: 'New chat', onClick: () => navigate('/ai') },
+			search: 'Search'
+		})
+	}, [list, phone])
+
 	/** The model's answer to the conversation as it stands, saved once done (or stopped). */
 	const answer = async (conv: ConversationDoc, upTo: MessageDoc[]) => {
 		const controller = new AbortController()
@@ -65,8 +76,11 @@ export function ChatApp() {
 				{ model: conv.model, messages: transcript(conv, upTo), maxTokens: MAX_ANSWER_TOKENS },
 				{ signal: controller.signal, onDelta: delta => { text += delta; setStreaming({ text }) } }
 			)
-			// its time to the hundredth (the model's decimal)
-			const seconds = Math.round((performance.now() - started) / 10) / 100
+			// its time to the hundredth (the model's decimal): the engine's own generation time when it
+			// says its speed (a cold start, a cool-down wait are not the model's)
+			const tps = result.usage?.tokensPerSecond
+			const tokens = result.usage?.completionTokens
+			const seconds = Math.round((tps && tokens ? tokens / tps : (performance.now() - started) / 1000) * 100) / 100
 			try {
 				await addMessage({ conversation: conv.id, role: 'assistant', content: result.content, model: conv.model, engine: 'local', tokens: result.usage?.completionTokens ?? null, seconds })
 			}
@@ -150,6 +164,8 @@ export function ChatApp() {
 			onStop={() => stop.current?.abort()}
 			onRegenerate={() => void regenerate()}
 			onBack={phone ? () => navigate('/ai') : undefined}
+			onRename={conversation ? (title => void conversations.update(conversation.id, { title }).then(reloadList)) : undefined}
+			onRemove={conversation ? (() => void remove(conversation.id)) : undefined}
 		/>
 	)
 
@@ -157,10 +173,5 @@ export function ChatApp() {
 		// the frame's viewport is its area: the page fills it, the composer at the bottom
 		return <div className="h-dvh min-h-0 flex flex-col">{active || pathname === '/ai/new' ? chatView : <div className="flex-1 min-h-0 p-4">{listView}</div>}</div>
 	}
-	return (
-		<div className="h-dvh min-h-0 flex">
-			<aside className="w-64 shrink-0 border-r border-steel-800 p-3 min-h-0">{listView}</aside>
-			{chatView}
-		</div>
-	)
+	return <div className="h-dvh min-h-0 flex">{chatView}</div>
 }

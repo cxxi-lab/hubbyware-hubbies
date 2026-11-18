@@ -1,4 +1,3 @@
-import { faComments } from '@fortawesome/free-solid-svg-icons'
 import { defineHubby } from '@cxxi-lab/hubbyware-sdk'
 import { ChatApp } from './pages/ChatApp'
 import './hubby.css'
@@ -9,6 +8,7 @@ import './hubby.css'
  * common API.
  */
 export default defineHubby({
-	navItems: [{ to: '/ai', label: 'Chat', icon: faComments, home: true }],
+	// no page in the app's column: its conversations are (its live navigation, pages/ChatApp.tsx)
+	navItems: [],
 	routes: [{ path: '/ai', Component: ChatApp, prefix: true, persistent: true }]
 })
