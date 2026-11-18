@@ -78,7 +78,7 @@ export function Mail() {
 
 	useEffect(() => {
 		if (folderId === null) return
-		try { storage.setItem(FOLDER_KEY, String(folderId)) } catch { /* per-viewer convenience only */ }
+		storage.setItem(FOLDER_KEY, String(folderId))
 	}, [folderId])
 
 	const updateFolder = useCallback((next: MailFolder) => {

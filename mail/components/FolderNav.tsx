@@ -106,7 +106,7 @@ function CustomFolders({ account, selectedFolderId, onSelect }: {
 }) {
 	const folders = account.folders.filter(f => f.role === null)
 	const [open, setOpen] = useState(() => {
-		try { return storage.getItem(openKey(account.id)) === '1' } catch { return false }
+		return storage.getItem(openKey(account.id)) === '1'
 	})
 	if (folders.length === 0) return null
 
@@ -116,7 +116,7 @@ function CustomFolders({ account, selectedFolderId, onSelect }: {
 	const toggle = () => {
 		const next = !shown
 		setOpen(next)
-		try { storage.setItem(openKey(account.id), next ? '1' : '0') } catch { /* per-viewer convenience only */ }
+		storage.setItem(openKey(account.id), next ? '1' : '0')
 	}
 
 	return (
