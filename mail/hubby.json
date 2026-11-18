@@ -1,7 +1,7 @@
 {
 	"id": "mail",
 	"version": "1.14.0",
-	"sdk": "^3.7.3",
+	"sdk": "^3.9.1",
 	"label": "Mail",
 	"description": "Your mailboxes in one place",
 	"icon": "envelope",
@@ -24,5 +24,8 @@
 		]
 	},
 	"isolated": true,
-	"settingsPage": "/mail/settings"
+	"settingsPage": "/mail/settings",
+	"storageFrom": [
+		"mail.folder"
+	]
 }

@@ -1,3 +1,4 @@
+import { storage } from '@cxxi-lab/hubbyware-sdk'
 import { useState } from 'react'
 import { faChevronDown, faChevronRight, faGear, faPlus, faRotate, faTriangleExclamation } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -105,7 +106,7 @@ function CustomFolders({ account, selectedFolderId, onSelect }: {
 }) {
 	const folders = account.folders.filter(f => f.role === null)
 	const [open, setOpen] = useState(() => {
-		try { return localStorage.getItem(openKey(account.id)) === '1' } catch { return false }
+		try { return storage.getItem(openKey(account.id)) === '1' } catch { return false }
 	})
 	if (folders.length === 0) return null
 
@@ -115,7 +116,7 @@ function CustomFolders({ account, selectedFolderId, onSelect }: {
 	const toggle = () => {
 		const next = !shown
 		setOpen(next)
-		try { localStorage.setItem(openKey(account.id), next ? '1' : '0') } catch { /* per-viewer convenience only */ }
+		try { storage.setItem(openKey(account.id), next ? '1' : '0') } catch { /* per-viewer convenience only */ }
 	}
 
 	return (

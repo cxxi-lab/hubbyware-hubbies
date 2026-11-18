@@ -3,7 +3,7 @@ import { faBan, faBoxArchive, faChevronDown, faPen, faEnvelope, faEnvelopeOpen, 
 import { faStar as faStarOutline } from '@fortawesome/free-regular-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useLocation, useNavigate, useSearchParams } from 'react-router'
-import { BottomBar, errorMessage, useBackHandler, useMediaQuery, type BottomBarTab } from '@cxxi-lab/hubbyware-sdk'
+import { BottomBar, errorMessage, storage, useBackHandler, useMediaQuery, type BottomBarTab } from '@cxxi-lab/hubbyware-sdk'
 import {
 	batchMessages, fetchAccounts, fetchMessages, syncAccount, syncFolder,
 	type BatchAction, type FolderRole, type MailAccount, type MailFolder, type MailMessage, type MailMessageSummary
@@ -23,7 +23,7 @@ const REFRESH_MS = 2 * 60 * 1000
 
 function storedFolderId(): string | null {
 	try {
-		return localStorage.getItem(FOLDER_KEY) || null
+		return storage.getItem(FOLDER_KEY) || null
 	}
 	catch {
 		return null
@@ -78,7 +78,7 @@ export function Mail() {
 
 	useEffect(() => {
 		if (folderId === null) return
-		try { localStorage.setItem(FOLDER_KEY, String(folderId)) } catch { /* per-viewer convenience only */ }
+		try { storage.setItem(FOLDER_KEY, String(folderId)) } catch { /* per-viewer convenience only */ }
 	}, [folderId])
 
 	const updateFolder = useCallback((next: MailFolder) => {
