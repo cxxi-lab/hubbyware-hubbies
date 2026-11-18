@@ -21,6 +21,16 @@ export default defineHubby({
 				.filter(n => !text || String(n.title ?? '').toLowerCase().includes(text))
 				.slice(0, limit)
 				.map(n => ({ id: n.id, title: String(n.title ?? '') }))
+		},
+		'notes.create': async ({ title }: { title: string }) => {
+			const note = await collection('note').create({ title })
+			return { id: note.id, title: String(note.title ?? title) }
+		},
+		// a demo of an outward action: nothing is sent anywhere
+		'notes.publish': async ({ id }: { id: string }) => {
+			const exists = (await collection('note').find()).some(n => n.id === id)
+			if (!exists) throw new Error(`no note ${id}`)
+			return { published: true }
 		}
 	}
 })

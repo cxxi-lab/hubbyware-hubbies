@@ -7,18 +7,94 @@
 				"type": "object",
 				"additionalProperties": false,
 				"properties": {
-					"query": { "type": "string", "maxLength": 200, "description": "A text the title contains (case-insensitive)" },
-					"limit": { "type": "integer", "minimum": 1, "maximum": 50, "default": 10 }
+					"query": {
+						"type": "string",
+						"maxLength": 200,
+						"description": "A text the title contains (case-insensitive)"
+					},
+					"limit": {
+						"type": "integer",
+						"minimum": 1,
+						"maximum": 50,
+						"default": 10
+					}
 				}
 			},
 			"output": {
 				"type": "array",
 				"items": {
 					"type": "object",
-					"required": ["id", "title"],
+					"required": [
+						"id",
+						"title"
+					],
 					"properties": {
-						"id": { "type": "string" },
-						"title": { "type": "string" }
+						"id": {
+							"type": "string"
+						},
+						"title": {
+							"type": "string"
+						}
+					}
+				}
+			}
+		},
+		"notes.create": {
+			"description": "Adds a note with this title",
+			"effect": "write",
+			"input": {
+				"type": "object",
+				"required": [
+					"title"
+				],
+				"additionalProperties": false,
+				"properties": {
+					"title": {
+						"type": "string",
+						"minLength": 1,
+						"maxLength": 200
+					}
+				}
+			},
+			"output": {
+				"type": "object",
+				"required": [
+					"id",
+					"title"
+				],
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"title": {
+						"type": "string"
+					}
+				}
+			}
+		},
+		"notes.publish": {
+			"description": "Demo of an outward action: pretends to publish a note outside Hubbyware (nothing is sent anywhere)",
+			"effect": "outward",
+			"input": {
+				"type": "object",
+				"required": [
+					"id"
+				],
+				"additionalProperties": false,
+				"properties": {
+					"id": {
+						"type": "string"
+					}
+				}
+			},
+			"output": {
+				"type": "object",
+				"required": [
+					"published"
+				],
+				"properties": {
+					"published": {
+						"type": "boolean"
 					}
 				}
 			}
