@@ -1,5 +1,5 @@
 import { faBriefcase, faFileInvoice, faGear, faUsers } from '@fortawesome/free-solid-svg-icons'
-import { describe, type HubbyManifest } from '@cxxi-lab/hubbyware-sdk'
+import { defineHubby, describe, type HubbyManifest } from '@cxxi-lab/hubbyware-sdk'
 import info from './hubby.json'
 import { BusinessInvoices } from './pages/BusinessInvoices'
 import { BusinessClients } from './pages/BusinessClients'
@@ -21,3 +21,6 @@ export const businessManifest: HubbyManifest = {
 		{ path: '/business/settings', Component: BusinessSettings }
 	]
 }
+
+// run isolated (client docs/plan-isolation.md): its frame runs this definition
+export default defineHubby(businessManifest)

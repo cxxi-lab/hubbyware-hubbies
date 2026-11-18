@@ -1,5 +1,5 @@
 import { faChartLine, faClockRotateLeft, faDumbbell, faListCheck, faRepeat } from '@fortawesome/free-solid-svg-icons'
-import { describe, type HubbyManifest, type TimelineItem } from '@cxxi-lab/hubbyware-sdk'
+import { defineHubby, describe, type HubbyManifest, type TimelineItem } from '@cxxi-lab/hubbyware-sdk'
 import info from './hubby.json'
 import { WorkoutsPrograms } from './pages/WorkoutsPrograms'
 import { WorkoutsHistory } from './pages/WorkoutsHistory'
@@ -14,16 +14,16 @@ export const workoutManifest: HubbyManifest = {
 	...describe(info),
 	icon: faDumbbell,
 	navItems: [
-		{ to: '/workouts/programs', label: 'Programs', icon: faListCheck },
-		{ to: '/workouts/history', label: 'History', icon: faClockRotateLeft },
-		{ to: '/workouts/greasing-groove', label: 'Greasing Groove', icon: faRepeat },
-		{ to: '/workouts/stats', label: 'Stats', icon: faChartLine }
+		{ to: '/workout/programs', label: 'Programs', icon: faListCheck },
+		{ to: '/workout/history', label: 'History', icon: faClockRotateLeft },
+		{ to: '/workout/greasing-groove', label: 'Greasing Groove', icon: faRepeat },
+		{ to: '/workout/stats', label: 'Stats', icon: faChartLine }
 	],
 	routes: [
-		{ path: '/workouts/programs', Component: WorkoutsPrograms, persistent: true },
-		{ path: '/workouts/history', Component: WorkoutsHistory, persistent: true },
-		{ path: '/workouts/greasing-groove', Component: WorkoutsGreasingGroove, persistent: true },
-		{ path: '/workouts/stats', Component: WorkoutsStats, persistent: true }
+		{ path: '/workout/programs', Component: WorkoutsPrograms, persistent: true },
+		{ path: '/workout/history', Component: WorkoutsHistory, persistent: true },
+		{ path: '/workout/greasing-groove', Component: WorkoutsGreasingGroove, persistent: true },
+		{ path: '/workout/stats', Component: WorkoutsStats, persistent: true }
 	],
 
 	// Planner's calendar: scheduled/performed sessions as dated items (the payload is only read
@@ -39,7 +39,7 @@ export const workoutManifest: HubbyManifest = {
 						date: new Date((s.performedAt ?? s.scheduledAt) as string),
 						title: s.programLabel,
 						hubbyId: 'workout',
-						href: '/workouts/history',
+						href: '/workout/history',
 						color: '#059669',
 						payload: s
 					}))
@@ -57,3 +57,6 @@ export const workoutManifest: HubbyManifest = {
 		}
 	}
 }
+
+// run isolated (client docs/plan-isolation.md): its frame runs this definition
+export default defineHubby(workoutManifest)

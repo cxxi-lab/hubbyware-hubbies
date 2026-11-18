@@ -1,11 +1,12 @@
 {
 	"id": "workout",
 	"version": "1.6.2",
-	"sdk": "^3.2.0",
+	"sdk": "^3.7.2",
 	"label": "Workouts",
 	"description": "Programs, sessions and stats",
 	"icon": "dumbbell",
 	"scopes": [
 		"hubby:planner.timeline"
-	]
+	],
+	"isolated": true
 }

@@ -1,11 +1,12 @@
 {
 	"id": "business",
 	"version": "1.7.2",
-	"sdk": "^3.2.0",
+	"sdk": "^3.7.2",
 	"label": "Business",
 	"description": "Invoices and clients",
 	"icon": "briefcase",
 	"supports": [
 		"amounts"
-	]
+	],
+	"isolated": true
 }

@@ -16,8 +16,8 @@
 		"react-router": "^7.18.3"
 	},
 	"devDependencies": {
-		"@cxxi-lab/hubby-cli": "^0.5.0",
-		"@cxxi-lab/hubbyware-sdk": "^3.2.0",
+		"@cxxi-lab/hubby-cli": "^0.8.0",
+		"@cxxi-lab/hubbyware-sdk": "^3.7.2",
 		"@cxxi-lab/hubbyware-ui": "^0.5.0",
 		"@types/react": "^19.2.14",
 		"@types/react-dom": "^19.2.3",
