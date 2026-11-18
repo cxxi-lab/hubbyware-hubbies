@@ -5,6 +5,7 @@ import { ConversationList, groupOf } from '../components/ConversationList'
 import { ChatView, type Streaming } from '../components/ChatView'
 import { addedModels, addMessage, BUILT_IN, BUILT_IN_LABEL, conversations, listAddedModels, listConversations, messages, messagesOf, newConversation, removeConversation, type AddedModelDoc, type ConversationDoc, type MessageDoc } from '../lib/data'
 import { ModelsDialog } from '../components/ModelsDialog'
+import { AssistantDialog } from '../components/AssistantDialog'
 import { ANSWER_TOKENS, contextFor } from '../lib/context'
 import { proposeTitle } from '../lib/title'
 
@@ -53,6 +54,7 @@ export function ChatApp() {
 	// the models added by link (synced), handed to this device to offer them (allowed, downloaded as the others)
 	const [added, setAdded] = useState<AddedModelDoc[]>([])
 	const [modelsOpen, setModelsOpen] = useState(false)
+	const [assistantOpen, setAssistantOpen] = useState(false)
 	const [nextModel, setNextModel] = useState(BUILT_IN)
 	useEffect(() => {
 		const reload = () => void listAddedModels().then(list => {
@@ -198,9 +200,10 @@ export function ChatApp() {
 			modelLabel={modelLabel}
 			onModel={readOnly ? undefined : changeModel}
 			onManageModels={readOnly ? undefined : () => setModelsOpen(true)}
+			onAssistant={() => setAssistantOpen(true)}
 		/>
 	)
-	const dialog = modelsOpen && <ModelsDialog added={added} onClose={() => setModelsOpen(false)} />
+	const dialog = <>{modelsOpen && <ModelsDialog added={added} onClose={() => setModelsOpen(false)} />}{assistantOpen && <AssistantDialog onClose={() => setAssistantOpen(false)} />}</>
 
 	if (phone) {
 		// the frame's viewport is its area: the page fills it, the composer at the bottom

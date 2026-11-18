@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faArrowLeft, faArrowsRotate, faCopy, faMicrochip, faPen, faStop, faTrash } from '@fortawesome/free-solid-svg-icons'
+import { faArrowLeft, faArrowsRotate, faCopy, faMicrochip, faPlug, faPen, faStop, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { Button, ConfirmationModal, Markdown } from '@cxxi-lab/hubbyware-ui'
 import type { MessageDoc } from '../lib/data'
 
@@ -27,7 +27,7 @@ function stats(m: MessageDoc, label: (name: string | null | undefined) => string
 	return `${label(m.model)} · ${m.tokens} tokens · ${(m.tokens / m.seconds).toFixed(0)} t/s`
 }
 
-export function ChatView({ title, summary, history, streaming, busy, error, readOnly, onSend, onStop, onRegenerate, onBack, onRename, onRemove, models, model, modelLabel, onModel, onManageModels }: {
+export function ChatView({ title, summary, history, streaming, busy, error, readOnly, onSend, onStop, onRegenerate, onBack, onRename, onRemove, models, model, modelLabel, onModel, onManageModels, onAssistant }: {
 	title: string | null
 	/** what the model keeps of the older messages (its summary, up to which message) */
 	summary: { text: string, upTo: string | null } | null
@@ -49,6 +49,8 @@ export function ChatView({ title, summary, history, streaming, busy, error, read
 	modelLabel: (name: string | null | undefined) => string
 	onModel?: (name: string) => void
 	onManageModels?: () => void
+	/** what the assistant may use (the hubbies opened to it) */
+	onAssistant?: () => void
 }) {
 	const [draft, setDraft] = useState('')
 	const [editing, setEditing] = useState<string | null>(null)
@@ -83,6 +85,9 @@ export function ChatView({ title, summary, history, streaming, busy, error, read
 						{models.map(o => <option key={o.name} value={o.name}>{o.label}</option>)}
 						{!models.some(o => o.name === model) && <option value={model}>{modelLabel(model) || model} (removed)</option>}
 					</select>
+				)}
+				{onAssistant && (
+					<button type="button" aria-label="Assistant" title="What the assistant may use" onClick={onAssistant} className="shrink-0 bg-transparent border-0 p-1 text-xs text-steel-400 hover:text-white cursor-pointer"><FontAwesomeIcon icon={faPlug} /></button>
 				)}
 				{onManageModels && (
 					<button type="button" aria-label="Models" title="Models" onClick={onManageModels} className="shrink-0 bg-transparent border-0 p-1 text-xs text-steel-400 hover:text-white cursor-pointer"><FontAwesomeIcon icon={faMicrochip} /></button>
