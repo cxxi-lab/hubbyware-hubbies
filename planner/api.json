@@ -1,0 +1,302 @@
+{
+	"methods": {
+		"events.list": {
+			"description": "The calendar's events overlapping a period, by start",
+			"effect": "read",
+			"input": {
+				"type": "object",
+				"additionalProperties": false,
+				"required": [
+					"from",
+					"to"
+				],
+				"properties": {
+					"from": {
+						"type": "string",
+						"description": "ISO date-time"
+					},
+					"to": {
+						"type": "string",
+						"description": "ISO date-time"
+					}
+				}
+			},
+			"output": {
+				"type": "array",
+				"items": {
+					"type": "object",
+					"required": [
+						"id",
+						"title",
+						"startsAt",
+						"allDay"
+					],
+					"properties": {
+						"id": {
+							"type": "string"
+						},
+						"title": {
+							"type": "string"
+						},
+						"startsAt": {
+							"type": "string"
+						},
+						"endsAt": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"allDay": {
+							"type": "boolean"
+						},
+						"description": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"category": {
+							"type": [
+								"string",
+								"null"
+							]
+						}
+					}
+				}
+			}
+		},
+		"categories.list": {
+			"description": "The event categories (name and color)",
+			"effect": "read",
+			"input": {
+				"type": "object",
+				"additionalProperties": false,
+				"properties": {}
+			},
+			"output": {
+				"type": "array",
+				"items": {
+					"type": "object",
+					"required": [
+						"name",
+						"color"
+					],
+					"properties": {
+						"name": {
+							"type": "string"
+						},
+						"color": {
+							"type": "string"
+						}
+					}
+				}
+			}
+		},
+		"events.create": {
+			"description": "Adds an event to the calendar",
+			"effect": "write",
+			"input": {
+				"type": "object",
+				"additionalProperties": false,
+				"required": [
+					"title",
+					"startsAt"
+				],
+				"properties": {
+					"title": {
+						"type": "string",
+						"minLength": 1,
+						"maxLength": 255
+					},
+					"startsAt": {
+						"type": "string",
+						"description": "ISO date-time (an all-day event: its day, at midnight local time)"
+					},
+					"endsAt": {
+						"type": [
+							"string",
+							"null"
+						],
+						"description": "ISO date-time, after startsAt; none for a moment or a single day"
+					},
+					"allDay": {
+						"type": "boolean"
+					},
+					"description": {
+						"type": [
+							"string",
+							"null"
+						],
+						"maxLength": 100000
+					},
+					"category": {
+						"type": [
+							"string",
+							"null"
+						],
+						"description": "A category's name (categories.list); none: no category"
+					}
+				}
+			},
+			"output": {
+				"type": "object",
+				"required": [
+					"id",
+					"title",
+					"startsAt",
+					"allDay"
+				],
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"title": {
+						"type": "string"
+					},
+					"startsAt": {
+						"type": "string"
+					},
+					"endsAt": {
+						"type": [
+							"string",
+							"null"
+						]
+					},
+					"allDay": {
+						"type": "boolean"
+					},
+					"description": {
+						"type": [
+							"string",
+							"null"
+						]
+					},
+					"category": {
+						"type": [
+							"string",
+							"null"
+						]
+					}
+				}
+			}
+		},
+		"events.update": {
+			"description": "Changes an event (by its id, from events.list): the fields given replace its own",
+			"effect": "write",
+			"input": {
+				"type": "object",
+				"additionalProperties": false,
+				"required": [
+					"id"
+				],
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"title": {
+						"type": "string",
+						"minLength": 1,
+						"maxLength": 255
+					},
+					"startsAt": {
+						"type": "string",
+						"description": "ISO date-time (an all-day event: its day, at midnight local time)"
+					},
+					"endsAt": {
+						"type": [
+							"string",
+							"null"
+						],
+						"description": "ISO date-time, after startsAt; none for a moment or a single day"
+					},
+					"allDay": {
+						"type": "boolean"
+					},
+					"description": {
+						"type": [
+							"string",
+							"null"
+						],
+						"maxLength": 100000
+					},
+					"category": {
+						"type": [
+							"string",
+							"null"
+						],
+						"description": "A category's name (categories.list); none: no category"
+					}
+				}
+			},
+			"output": {
+				"type": "object",
+				"required": [
+					"id",
+					"title",
+					"startsAt",
+					"allDay"
+				],
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"title": {
+						"type": "string"
+					},
+					"startsAt": {
+						"type": "string"
+					},
+					"endsAt": {
+						"type": [
+							"string",
+							"null"
+						]
+					},
+					"allDay": {
+						"type": "boolean"
+					},
+					"description": {
+						"type": [
+							"string",
+							"null"
+						]
+					},
+					"category": {
+						"type": [
+							"string",
+							"null"
+						]
+					}
+				}
+			}
+		},
+		"events.delete": {
+			"description": "Deletes an event (by its id, from events.list), for good",
+			"effect": "outward",
+			"input": {
+				"type": "object",
+				"additionalProperties": false,
+				"required": [
+					"id"
+				],
+				"properties": {
+					"id": {
+						"type": "string"
+					}
+				}
+			},
+			"output": {
+				"type": "object",
+				"required": [
+					"deleted"
+				],
+				"properties": {
+					"deleted": {
+						"type": "boolean"
+					}
+				}
+			}
+		}
+	}
+}
