@@ -1,4 +1,5 @@
 import { faChartLine, faClockRotateLeft, faDumbbell, faListCheck, faRepeat } from '@fortawesome/free-solid-svg-icons'
+import { workoutApi } from './api/assistant'
 import { defineHubby, describe, type HubbyManifest, type TimelineEntry } from '@cxxi-lab/hubbyware-sdk'
 import info from './hubby.json'
 import { WorkoutsPrograms } from './pages/WorkoutsPrograms'
@@ -31,6 +32,7 @@ export const workoutManifest: HubbyManifest = {
 export default defineHubby({
 	...workoutManifest,
 	api: {
+		...workoutApi,
 		'timeline.items': async ({ start, end }: { start: string, end: string }): Promise<TimelineEntry[]> => {
 			const sessions = await fetchSessions(new Date(start), new Date(end))
 			return sessions.flatMap(s => {
