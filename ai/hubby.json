@@ -1,6 +1,6 @@
 {
 	"id": "ai",
-	"version": "1.11.0",
+	"version": "1.12.0",
 	"sdk": "^3.15.0",
 	"label": "AI",
 	"description": "Chat with AI models running on this device",
