@@ -1,0 +1,18 @@
+{
+	"collection": "message",
+	"version": 1,
+	"description": "One message of a conversation (one document each: a long conversation syncs message by message)",
+	"fields": {
+		"conversation": { "type": "ref", "collection": "conversation", "required": true, "onDelete": "cascade" },
+		"role": { "type": "enum", "values": ["user", "assistant", "tool"], "required": true },
+		"content": { "type": "text", "max": 400000, "encrypted": true },
+		"toolCalls": { "type": "text", "max": 100000, "encrypted": true, "description": "an assistant's tool calls (JSON), or the call a tool message answers" },
+		"model": { "type": "string", "max": 120, "description": "the model that wrote it (an assistant's)" },
+		"engine": { "type": "enum", "values": ["local", "claude-code"] },
+		"tokens": { "type": "int", "min": 0, "description": "how many tokens it took" },
+		"seconds": { "type": "decimal", "description": "how long it took" }
+	},
+	"indexes": [
+		{ "fields": [["conversation", 1]] }
+	]
+}

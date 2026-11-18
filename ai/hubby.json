@@ -1,13 +1,65 @@
 {
 	"id": "ai",
 	"version": "1.5.0",
-	"sdk": "^3.7.0",
-	"label": "AI Engine",
-	"description": "Local AI tools",
-	"icon": "microchip",
-	"local": true,
-	"requiresCapabilities": [
-		"companion"
+	"sdk": "^3.13.0",
+	"label": "AI",
+	"description": "Chat with AI models running on this device",
+	"icon": "comments",
+	"isolated": true,
+	"scopes": [
+		"app:ai"
 	],
-	"isolated": true
+	"ai": {
+		"chat": {
+			"family": "text",
+			"description": "Qwen3, for chatting and using your hubbies",
+			"variants": [
+				{
+					"repo": "bartowski/Qwen_Qwen3-8B-GGUF",
+					"revision": "0b69f75b7472688e6808490aa2b85efdb81b5ce7",
+					"files": [
+						{
+							"path": "Qwen_Qwen3-8B-Q4_K_M.gguf",
+							"sha256": "54fffa050078e984116639c83dfb64b5aa6d4cd474e018b076777c632bbccccd",
+							"size": 5027784224
+						}
+					],
+					"requires": {
+						"vram": 6200,
+						"ram": 10000
+					}
+				},
+				{
+					"repo": "bartowski/Qwen_Qwen3-4B-GGUF",
+					"revision": "cb76885dc66d50759b207c5a48c4e78dfa00c638",
+					"files": [
+						{
+							"path": "Qwen_Qwen3-4B-Q4_K_M.gguf",
+							"sha256": "fbe1d5edd4ce802ae3ae7c7e4ab7d09789d697fdac1fc7929f8df4ca3c41bae3",
+							"size": 2497280960
+						}
+					],
+					"requires": {
+						"vram": 3600,
+						"ram": 6000
+					}
+				},
+				{
+					"repo": "bartowski/Qwen_Qwen3-1.7B-GGUF",
+					"revision": "dcb19155b962dbb6389f4691a982043a8e651022",
+					"files": [
+						{
+							"path": "Qwen_Qwen3-1.7B-Q4_K_M.gguf",
+							"sha256": "72c5c3cb38fa32d5256e2fe30d03e7a64c6c79e668ad84057e3bd66e250b24fb",
+							"size": 1282439584
+						}
+					],
+					"requires": {
+						"vram": 2000,
+						"ram": 3000
+					}
+				}
+			]
+		}
+	}
 }

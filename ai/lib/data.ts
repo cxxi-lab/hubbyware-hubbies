@@ -1,0 +1,59 @@
+import { collection, type HubbyDocument } from '@cxxi-lab/hubbyware-sdk'
+
+/**
+ * The conversations and their messages (client docs/plan-ia-chat.md § 2.2): two collections of the
+ * hubby, on the device and synced, their texts encrypted (the server relays them without reading).
+ */
+
+export type Engine = 'local' | 'claude-code'
+
+export interface Conversation {
+	title: string
+	/** a name of hubby.json "ai" (or, phase 3, a model added by link) */
+	model: string
+	engine: Engine
+	/** what its oldest messages said (phase 2) */
+	summary?: string | null
+	summaryUpTo?: string | null
+	lastMessageAt: string
+}
+
+export interface Message {
+	conversation: string
+	role: 'user' | 'assistant' | 'tool'
+	content: string
+	toolCalls?: string | null
+	model?: string | null
+	engine?: Engine | null
+	tokens?: number | null
+	seconds?: number | null
+}
+
+export type ConversationDoc = Conversation & HubbyDocument
+export type MessageDoc = Message & HubbyDocument
+
+export const conversations = collection<Conversation>('conversation')
+export const messages = collection<Message>('message')
+
+export const listConversations = () => conversations.findAll({ sort: '-lastMessageAt' })
+export const messagesOf = (id: string) => messages.findAll({ filter: { conversation: id }, sort: '_createdAt' })
+
+export function newConversation(firstMessage: string, model: string): Promise<ConversationDoc> {
+	const line = firstMessage.replace(/\s+/g, ' ').trim()
+	return conversations.create({ title: line.length > 48 ? `${line.slice(0, 47)}…` : line || 'New chat', model, engine: 'local', lastMessageAt: new Date().toISOString() })
+}
+
+export async function addMessage(message: Message): Promise<MessageDoc> {
+	const doc = await messages.create(message)
+	await conversations.update(message.conversation, { lastMessageAt: doc._createdAt })
+	return doc
+}
+
+/** A conversation and its messages (by batches: a long one has many). */
+export async function removeConversation(id: string): Promise<void> {
+	const all = await messagesOf(id)
+	for (let i = 0; i < all.length; i += 100) {
+		await messages.batch(all.slice(i, i + 100).map(m => ({ op: 'delete' as const, id: m.id })))
+	}
+	await conversations.remove(id)
+}

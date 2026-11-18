@@ -1,0 +1,16 @@
+{
+	"collection": "conversation",
+	"version": 1,
+	"description": "A chat with an AI model (client docs/plan-ia-chat.md § 2.2): its messages are the message collection's",
+	"fields": {
+		"title": { "type": "string", "max": 255, "required": true, "encrypted": true },
+		"model": { "type": "string", "max": 120, "required": true, "description": "the model it runs on: a name of hubby.json ai, or a model added by link" },
+		"engine": { "type": "enum", "values": ["local", "claude-code"], "default": "local" },
+		"summary": { "type": "text", "max": 100000, "encrypted": true, "description": "what its oldest messages said, once they no longer fit the model's context (phase 2)" },
+		"summaryUpTo": { "type": "string", "max": 64, "description": "the last message the summary covers" },
+		"lastMessageAt": { "type": "datetime", "required": true, "description": "its order in the list" }
+	},
+	"indexes": [
+		{ "fields": [["lastMessageAt", -1]] }
+	]
+}
