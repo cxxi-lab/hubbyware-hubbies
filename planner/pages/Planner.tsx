@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { useNavigate } from 'react-router'
 import { PlannerToolbar } from '../components/PlannerToolbar'
 import { PlannerWeekView } from '../components/PlannerWeekView'
 import { PlannerMonthView } from '../components/PlannerMonthView'
@@ -8,7 +7,7 @@ import { EventModal } from '../components/EventModal'
 import { fetchEventCategories, type EventCategory } from '../api/eventCategories'
 import { fetchEvents, type PlannerEvent } from '../api/events'
 import type { PlannerItem } from '../lib/plannerItems'
-import { useBackHandler, useMediaQuery, type TimelineItem } from '@cxxi-lab/hubbyware-sdk'
+import { hubbies, useBackHandler, useMediaQuery, type TimelineEntry, type TimelineItem } from '@cxxi-lab/hubbyware-sdk'
 import {
 	addDays,
 	addMonths,
@@ -29,7 +28,6 @@ interface EventModalState {
 }
 
 export function Planner() {
-	const navigate = useNavigate()
 
 	const [view, setView] = useState<PlannerView>('month')
 	const [anchor, setAnchor] = useState(() => startOfDay(new Date()))
@@ -37,9 +35,9 @@ export function Planner() {
 
 	const [categories, setCategories] = useState<EventCategory[]>([])
 	const [events, setEvents] = useState<PlannerEvent[]>([])
-	// the dated items of other hubbies (Workout's sessions…): none while the hubbies run isolated,
-	// until they reach each other through their APIs (client docs/plan-isolation.md D2)
-	const timelineItems: TimelineItem[] = []
+	// the dated items of the other hubbies (Workout's sessions…): those offering the interface
+	// timeline.items (client docs/plan-api-hubbies.md), without naming them
+	const [timelineItems, setTimelineItems] = useState<TimelineItem[]>([])
 	const [search, setSearch] = useState('')
 	const [selectedCategoryIds, setSelectedCategoryIds] = useState<Set<string>>(new Set())
 	const [includeUncategorized, setIncludeUncategorized] = useState(true)
@@ -67,6 +65,19 @@ export function Planner() {
 		fetchEvents(visibleRange.start, visibleRange.end)
 			.then(setEvents)
 			.catch(err => console.warn('[planner] events fetch failed', err))
+		hubbies.callAll<TimelineEntry[]>('timeline.items', { start: visibleRange.start.toISOString(), end: visibleRange.end.toISOString() })
+			.then(answers => {
+				for (const a of answers) if (a.error) console.warn(`[planner] ${a.hubby}'s items not read`, a.error)
+				setTimelineItems(answers.flatMap(a => (a.result ?? []).map(e => ({
+					id: `${a.hubby}:${e.id}`,
+					date: new Date(e.date),
+					title: e.title,
+					hubbyId: a.hubby,
+					href: e.href,
+					color: e.color
+				}))))
+			})
+			.catch(err => console.warn('[planner] the other hubbies\' items not read', err))
 	}, [visibleRange.start, visibleRange.end])
 
 	useEffect(() => { reload() }, [reload])
@@ -129,8 +140,8 @@ export function Planner() {
 			setEventModal({ mode: 'edit', event: item.event, date: null })
 			return
 		}
-		// another hubby's item: its page
-		navigate(item.item.href)
+		// another hubby's item: its page, in that hubby
+		void hubbies.open(item.item.hubbyId, item.item.href).catch(err => console.warn('[planner] not opened', err))
 	}
 
 	const phone = useMediaQuery('(width < 40rem)')

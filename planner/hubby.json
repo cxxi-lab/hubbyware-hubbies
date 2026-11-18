@@ -1,9 +1,12 @@
 {
 	"id": "planner",
 	"version": "1.7.1",
-	"sdk": "^3.7.2",
+	"sdk": "^3.11.0",
 	"label": "Planner",
 	"description": "Calendar and agenda",
 	"icon": "calendar-days",
-	"isolated": true
+	"isolated": true,
+	"scopes": [
+		"hubby:timeline.items"
+	]
 }
