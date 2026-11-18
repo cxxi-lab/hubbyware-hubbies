@@ -260,8 +260,8 @@ export function Mail() {
 		}
 	}
 
-	// Mailboxes are managed on their own screen (Hubbies > Mail).
-	const manage = () => navigate('/hubbies/mail')
+	// its mailboxes are managed on its settings page (a page of its own: it runs isolated)
+	const manage = () => navigate('/mail/settings')
 
 	if (accounts === null) {
 		return <div className="flex-1 flex items-center justify-center text-sm text-steel-400">{error ?? 'Loading…'}</div>

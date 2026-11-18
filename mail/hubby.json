@@ -1,7 +1,7 @@
 {
 	"id": "mail",
 	"version": "1.13.0",
-	"sdk": "^3.3.0",
+	"sdk": "^3.7.3",
 	"label": "Mail",
 	"description": "Your mailboxes in one place",
 	"icon": "envelope",
@@ -22,5 +22,7 @@
 			"https://outlook.office.com/IMAP.AccessAsUser.All",
 			"https://outlook.office.com/SMTP.Send"
 		]
-	}
+	},
+	"isolated": true,
+	"settingsPage": "/mail/settings"
 }

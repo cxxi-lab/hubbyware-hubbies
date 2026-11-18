@@ -11,8 +11,6 @@ interface Props {
 	children: ReactNode
 }
 
-// In the Settings window there is no top bar to leave uncovered.
-const BELOW_TOP_BAR = new URLSearchParams(window.location.search).get('window') !== 'settings'
 
 /** Overlay + form frame of the Mail modals (Escape / backdrop close). */
 export function ModalShell({ title, width = 'max-w-2xl', onClose, onSubmit, footer, children }: Props) {
@@ -26,7 +24,7 @@ export function ModalShell({ title, width = 'max-w-2xl', onClose, onSubmit, foot
 
 	return (
 		<div
-			className={`fixed ${BELOW_TOP_BAR ? 'top-14' : 'top-0'} inset-x-0 bottom-0 bg-black/70 backdrop-blur-sm z-100 flex items-center justify-center p-4`}
+			className={`fixed top-0 inset-x-0 bottom-0 bg-black/70 backdrop-blur-sm z-100 flex items-center justify-center p-4`}
 			onClick={onClose}
 		>
 			<form
