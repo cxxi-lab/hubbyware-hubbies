@@ -10,7 +10,7 @@ import type { MessageDoc } from '../lib/data'
  * a new line), each answer's model and speed. Read-only where no model runs (D5).
  */
 
-export interface Streaming { text: string }
+export interface Streaming { text: string, status?: string }
 
 function CopyButton({ text }: { text: string }) {
 	const [copied, setCopied] = useState(false)
@@ -27,8 +27,10 @@ function stats(m: MessageDoc): string | null {
 	return `${m.model ?? ''} · ${m.tokens} tokens · ${(m.tokens / m.seconds).toFixed(0)} t/s`
 }
 
-export function ChatView({ title, history, streaming, busy, error, readOnly, onSend, onStop, onRegenerate, onBack, onRename, onRemove }: {
+export function ChatView({ title, summary, history, streaming, busy, error, readOnly, onSend, onStop, onRegenerate, onBack, onRename, onRemove }: {
 	title: string | null
+	/** what the model keeps of the older messages (its summary, up to which message) */
+	summary: { text: string, upTo: string | null } | null
 	history: MessageDoc[]
 	streaming: Streaming | null
 	busy: boolean
@@ -87,7 +89,7 @@ export function ChatView({ title, history, streaming, busy, error, readOnly, onS
 					{shown.length === 0 && !streaming && (
 						<p className="m-0 mt-8 text-center text-sm text-steel-400">{readOnly ? 'AI models don\'t run on this device: your conversations can be read here, and continued on a device that runs them.' : 'Ask anything. The model runs on this device: nothing you write leaves it.'}</p>
 					)}
-					{shown.map(m => m.role === 'user' ? (
+					{shown.map(m => [m.role === 'user' ? (
 						<div key={m.id} data-role="user" className="self-end max-w-[85%] rounded-lg bg-primary-500/20 px-3 py-2 text-sm text-white whitespace-pre-wrap break-words">{m.content}</div>
 					) : (
 						<div key={m.id} data-role="assistant" className="flex flex-col gap-1">
@@ -100,10 +102,16 @@ export function ChatView({ title, history, streaming, busy, error, readOnly, onS
 								<span data-testid="stats">{stats(m)}</span>
 							</div>
 						</div>
-					))}
+					), m.id === summary?.upTo && (
+						// where the model's memory starts: what came before reaches it as a summary
+						<details key={`${m.id}-summary`} data-testid="summary" className="rounded border border-dashed border-steel-700 px-3 py-2 text-xs text-steel-400">
+							<summary className="cursor-pointer">Earlier messages are summarized for the model</summary>
+							<p className="m-0 mt-2 whitespace-pre-wrap text-steel-300">{summary.text}</p>
+						</details>
+					)])}
 					{streaming && (
 						<div data-role="streaming" className="flex flex-col gap-1">
-							{streaming.text ? <Markdown>{streaming.text}</Markdown> : <span className="text-sm text-steel-400">…</span>}
+							{streaming.text ? <Markdown>{streaming.text}</Markdown> : <span className="text-sm text-steel-400">{streaming.status ?? '…'}</span>}
 						</div>
 					)}
 					{error && <p className="m-0 text-xs text-red-300" data-testid="error">{error}</p>}

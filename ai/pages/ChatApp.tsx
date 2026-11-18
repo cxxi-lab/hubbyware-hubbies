@@ -4,7 +4,7 @@ import { ai, errorMessage, nav, platform, useAppState } from '@cxxi-lab/hubbywar
 import { ConversationList, groupOf } from '../components/ConversationList'
 import { ChatView, type Streaming } from '../components/ChatView'
 import { addMessage, conversations, listConversations, messages, messagesOf, newConversation, removeConversation, type ConversationDoc, type MessageDoc } from '../lib/data'
-import { transcript } from '../lib/transcript'
+import { ANSWER_TOKENS, contextFor } from '../lib/context'
 import { proposeTitle } from '../lib/title'
 
 /**
@@ -16,7 +16,6 @@ import { proposeTitle } from '../lib/title'
 
 /** the model of a new conversation: the hubby's (hubby.json "ai") */
 const MODEL = 'chat'
-const MAX_ANSWER_TOKENS = 2_048
 
 export function ChatApp() {
 	const { pathname } = useLocation()
@@ -72,8 +71,11 @@ export function ChatApp() {
 		let keep = false
 		const started = performance.now()
 		try {
+			// the messages that no longer fit summarized first (saved in the conversation)
+			const { messages: context } = await contextFor(conv, upTo, () => setStreaming({ text: '', status: 'Summarizing the earlier messages…' }))
+			setStreaming({ text: '' })
 			const result = await ai.chat(
-				{ model: conv.model, messages: transcript(conv, upTo), maxTokens: MAX_ANSWER_TOKENS },
+				{ model: conv.model, messages: context, maxTokens: ANSWER_TOKENS },
 				{ signal: controller.signal, onDelta: delta => { text += delta; setStreaming({ text }) } }
 			)
 			// its time to the hundredth (the model's decimal): the engine's own generation time when it
@@ -155,6 +157,7 @@ export function ChatApp() {
 	const chatView = (
 		<ChatView
 			title={conversation?.title ?? null}
+			summary={conversation?.summary ? { text: conversation.summary, upTo: conversation.summaryUpTo ?? null } : null}
 			history={history}
 			streaming={streaming}
 			busy={busy}

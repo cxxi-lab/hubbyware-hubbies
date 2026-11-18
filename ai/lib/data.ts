@@ -36,7 +36,10 @@ export const conversations = collection<Conversation>('conversation')
 export const messages = collection<Message>('message')
 
 export const listConversations = () => conversations.findAll({ sort: '-lastMessageAt' })
+/** A conversation's messages in order: by time, then by id (uuidv7, growing even within a millisecond: two
+ * messages written in the same one keep their order) */
 export const messagesOf = (id: string) => messages.findAll({ filter: { conversation: id }, sort: '_createdAt' })
+	.then(list => list.sort((a, b) => a._createdAt.localeCompare(b._createdAt) || a.id.localeCompare(b.id)))
 
 export function newConversation(firstMessage: string, model: string): Promise<ConversationDoc> {
 	const line = firstMessage.replace(/\s+/g, ' ').trim()
