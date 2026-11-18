@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
+import { useNavigate, useSearchParams } from 'react-router'
 import { faCalendarDay, faClock, faPlus } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { fetchSessions, type WorkoutSessionSummary } from '../api/workoutSessions'
@@ -45,6 +46,21 @@ export function WorkoutsHistory() {
 	}, [])
 
 	useEffect(() => { reload() }, [reload])
+
+	// a link to one of its sessions (`?session=<id>`: Planner's calendar): opened once they are read
+	const [params] = useSearchParams()
+	const navigate = useNavigate()
+	const linked = params.get('session')
+	useEffect(() => {
+		if (!linked || loading) return
+		const session = sessions.find(s => s.id === linked)
+		if (session) setModal({ kind: 'edit', session })
+		else navigate('/workout/history', { replace: true })
+	}, [linked, loading, sessions])
+	const closeModal = () => {
+		setModal(null)
+		if (linked) navigate('/workout/history', { replace: true })
+	}
 
 	function handlePick(p: ProgramSummary) {
 		setModal({ kind: 'create', programId: p.id })
@@ -121,7 +137,7 @@ export function WorkoutsHistory() {
 				<WorkoutSessionModal
 					mode="edit"
 					session={modal.session}
-					onClose={() => setModal(null)}
+					onClose={closeModal}
 					onSaved={reload}
 				/>
 			)}

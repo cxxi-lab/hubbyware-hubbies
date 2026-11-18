@@ -1,0 +1,31 @@
+{
+	"methods": {
+		"timeline.items": {
+			"description": "The workout sessions between two dates (performed, else scheduled), as dated items of a calendar; each opens the session in Workouts",
+			"effect": "read",
+			"interface": "timeline.items",
+			"input": {
+				"type": "object",
+				"required": ["start", "end"],
+				"properties": {
+					"start": { "type": "string", "description": "ISO date-time" },
+					"end": { "type": "string", "description": "ISO date-time" }
+				}
+			},
+			"output": {
+				"type": "array",
+				"items": {
+					"type": "object",
+					"required": ["id", "date", "title", "href"],
+					"properties": {
+						"id": { "type": "string" },
+						"date": { "type": "string" },
+						"title": { "type": "string", "description": "The session's program" },
+						"href": { "type": "string" },
+						"color": { "type": "string" }
+					}
+				}
+			}
+		}
+	}
+}

@@ -1,10 +1,11 @@
 import { faChartLine, faClockRotateLeft, faDumbbell, faListCheck, faRepeat } from '@fortawesome/free-solid-svg-icons'
-import { defineHubby, describe, type HubbyManifest } from '@cxxi-lab/hubbyware-sdk'
+import { defineHubby, describe, type HubbyManifest, type TimelineEntry } from '@cxxi-lab/hubbyware-sdk'
 import info from './hubby.json'
 import { WorkoutsPrograms } from './pages/WorkoutsPrograms'
 import { WorkoutsHistory } from './pages/WorkoutsHistory'
 import { WorkoutsGreasingGroove } from './pages/WorkoutsGreasingGroove'
 import { WorkoutsStats } from './pages/WorkoutsStats'
+import { fetchSessions } from './api/workoutSessions'
 import './hubby.css'
 
 export const workoutManifest: HubbyManifest = {
@@ -23,10 +24,19 @@ export const workoutManifest: HubbyManifest = {
 		{ path: '/workout/greasing-groove', Component: WorkoutsGreasingGroove, persistent: true },
 		{ path: '/workout/stats', Component: WorkoutsStats, persistent: true }
 	],
-
-	// Planner's calendar: scheduled/performed sessions as dated items (the payload is only read
-	// back below, by this hubby).
 }
 
-// run isolated (client docs/plan-isolation.md): its frame runs this definition
-export default defineHubby(workoutManifest)
+// run isolated (client docs/plan-isolation.md): its frame runs this definition; its API (api.json,
+// client docs/plan-api-hubbies.md): its sessions as a calendar's dated items (Planner shows them)
+export default defineHubby({
+	...workoutManifest,
+	api: {
+		'timeline.items': async ({ start, end }: { start: string, end: string }): Promise<TimelineEntry[]> => {
+			const sessions = await fetchSessions(new Date(start), new Date(end))
+			return sessions.flatMap(s => {
+				const date = s.performedAt ?? s.scheduledAt
+				return date ? [{ id: s.id, date: new Date(date).toISOString(), title: s.programLabel, href: `/history?session=${encodeURIComponent(s.id)}`, color: '#059669' }] : []
+			})
+		}
+	}
+})
