@@ -1,7 +1,7 @@
 {
 	"id": "sample",
 	"version": "1.1.1",
-	"sdk": "^3.0.0",
+	"sdk": "^3.10.0",
 	"label": "Hubby",
 	"description": "Demo hubby",
 	"icon": "flask",
