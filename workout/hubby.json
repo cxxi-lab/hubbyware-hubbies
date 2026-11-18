@@ -1,6 +1,6 @@
 {
 	"id": "workout",
-	"version": "1.7.0",
+	"version": "1.7.1",
 	"sdk": "^3.7.2",
 	"label": "Workouts",
 	"description": "Programs, sessions and stats",
