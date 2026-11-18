@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router'
-import { ai, errorMessage, nav, platform, useAppState } from '@cxxi-lab/hubbyware-sdk'
+import { ai, errorMessage, nav, platform, useAppState, type AiMessage } from '@cxxi-lab/hubbyware-sdk'
 import { ConversationList, groupOf } from '../components/ConversationList'
 import { ChatView, type Streaming } from '../components/ChatView'
 import { addedModels, addMessage, BUILT_IN, BUILT_IN_LABEL, conversations, listAddedModels, listConversations, messages, messagesOf, newConversation, removeConversation, type AddedModelDoc, type ConversationDoc, type MessageDoc } from '../lib/data'
@@ -8,6 +8,7 @@ import { ModelsDialog } from '../components/ModelsDialog'
 import { AssistantDialog } from '../components/AssistantDialog'
 import { ANSWER_TOKENS, contextFor } from '../lib/context'
 import { proposeTitle } from '../lib/title'
+import { loadToolset, MAX_ROUNDS, resultText, type ToolTrace } from '../lib/agent'
 
 /**
  * The AI hubby's chat (client docs/plan-ia-chat.md, phase 1): its conversations in the app's column
@@ -86,7 +87,12 @@ export function ChatApp() {
 		})
 	}, [list, phone])
 
-	/** The model's answer to the conversation as it stands, saved once done (or stopped). */
+	/**
+	 * The model's answer to the conversation as it stands, saved once done (or stopped). With hubbies
+	 * opened to the assistant (client docs/plan-ia-agent.md, phase 2), the model may call their tools
+	 * first: each call run by the app (asking the user before a change or a send), it and its result
+	 * saved (the conversation's trace), the model going on with the results — at most MAX_ROUNDS rounds.
+	 */
 	const answer = async (conv: ConversationDoc, upTo: MessageDoc[]) => {
 		const controller = new AbortController()
 		stop.current = controller
@@ -97,20 +103,54 @@ export function ChatApp() {
 		let keep = false
 		const started = performance.now()
 		try {
+			// the hubbies' tools (none opened: a plain chat); unreachable, the chat goes on without them
+			const toolset = await loadToolset().catch(() => null)
 			// the messages that no longer fit summarized first (saved in the conversation)
-			const { messages: context } = await contextFor(conv, upTo, () => setStreaming({ text: '', status: 'Summarizing the earlier messages…' }))
+			const { messages: context } = await contextFor(conv, upTo, () => setStreaming({ text: '', status: 'Summarizing the earlier messages…' }),
+				toolset ? { instructions: toolset.instructions, chars: JSON.stringify(toolset.specs).length } : undefined)
 			setStreaming({ text: '' })
-			const result = await ai.chat(
-				{ model: conv.model, messages: context, maxTokens: ANSWER_TOKENS },
-				{ signal: controller.signal, onDelta: delta => { text += delta; setStreaming({ text }) } }
-			)
+			const turn: AiMessage[] = []
+			let tokens = 0
+			let genSeconds = 0
+			for (let round = 0; ; round++) {
+				text = ''
+				const offerTools = toolset && round < MAX_ROUNDS
+				const result = await ai.chat(
+					{ model: conv.model, messages: [...context, ...turn], maxTokens: ANSWER_TOKENS, ...(offerTools ? { tools: toolset.specs } : {}) },
+					{ signal: controller.signal, onDelta: delta => { text += delta; setStreaming({ text }) } }
+				)
+				const tps = result.usage?.tokensPerSecond
+				const n = result.usage?.completionTokens ?? 0
+				tokens += n
+				genSeconds += tps && n ? n / tps : 0
+				if (!offerTools || !result.toolCalls.length) {
+					text = result.content
+					break
+				}
+				// the model calls tools: its message (the calls) kept, each call run, its result kept
+				const calls = result.toolCalls
+				await addMessage({ conversation: conv.id, role: 'assistant', content: result.content, toolCalls: JSON.stringify(calls.map(c => ({ id: c.id, name: c.name, arguments: c.arguments }))), model: conv.model, engine: 'local' })
+				turn.push({ role: 'assistant', content: result.content, tool_calls: calls.map(c => ({ id: c.id, type: 'function', function: { name: c.name, arguments: JSON.stringify(c.arguments ?? {}) } })) })
+				for (const call of calls) {
+					if (controller.signal.aborted) throw new DOMException('stopped', 'AbortError')
+					const tool = toolset.tools.find(t => t.name === call.name)
+					setStreaming({ text: '', status: tool ? `Using ${tool.hubbyLabel}…` : 'Using a tool…' })
+					const r = call.error
+						? { tool: call.name, hubby: tool?.hubby ?? '', method: tool?.method ?? call.name, effect: tool?.effect ?? 'read', confirmation: 'none' as const, ok: false, error: `its arguments are not valid JSON (${call.error})` }
+						: await ai.agent.call(conv.id, call.name, call.arguments ?? {})
+					const content = resultText(r)
+					const trace: ToolTrace = { id: call.id, name: call.name, hubby: r.hubby, hubbyLabel: tool?.hubbyLabel ?? r.hubby, method: r.method, effect: r.effect, confirmation: r.confirmation, ok: r.ok, arguments: call.arguments ?? {} }
+					await addMessage({ conversation: conv.id, role: 'tool', content, toolCalls: JSON.stringify(trace) })
+					turn.push({ role: 'tool', tool_call_id: call.id, content })
+				}
+				await reloadHistory(conv.id)
+				setStreaming({ text: '' })
+			}
 			// its time to the hundredth (the model's decimal): the engine's own generation time when it
 			// says its speed (a cold start, a cool-down wait are not the model's)
-			const tps = result.usage?.tokensPerSecond
-			const tokens = result.usage?.completionTokens
-			const seconds = Math.round((tps && tokens ? tokens / tps : (performance.now() - started) / 1000) * 100) / 100
+			const seconds = Math.round((genSeconds || (performance.now() - started) / 1000) * 100) / 100
 			try {
-				await addMessage({ conversation: conv.id, role: 'assistant', content: result.content, model: conv.model, engine: 'local', tokens: result.usage?.completionTokens ?? null, seconds })
+				await addMessage({ conversation: conv.id, role: 'assistant', content: text, model: conv.model, engine: 'local', tokens: tokens || null, seconds })
 			}
 			catch (err) {
 				// not saved: the answer stays on screen, with why
@@ -120,7 +160,7 @@ export function ChatApp() {
 			}
 			// the first exchange: the model proposes a title (the first words stay if it doesn't)
 			if (upTo.filter(m => m.role === 'user').length === 1) {
-				const title = await proposeTitle(conv.model, upTo[0].content, result.content)
+				const title = await proposeTitle(conv.model, upTo[0].content, text)
 				if (title) await conversations.update(conv.id, { title })
 			}
 		}
@@ -155,11 +195,14 @@ export function ChatApp() {
 		}
 	}
 
+	// the last answer again: it and the tool calls it made (back to the user's message)
 	const regenerate = async () => {
 		const last = history.at(-1)
 		if (!conversation || last?.role !== 'assistant') return
-		await messages.remove(last.id)
-		const upTo = history.slice(0, -1)
+		const from = history.map(m => m.role).lastIndexOf('user') + 1
+		const gone = history.slice(from)
+		await messages.batch(gone.map(m => ({ op: 'delete' as const, id: m.id })))
+		const upTo = history.slice(0, from)
 		setHistory(upTo)
 		await answer(conversation, upTo)
 	}

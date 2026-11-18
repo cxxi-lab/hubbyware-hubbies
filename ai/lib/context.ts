@@ -1,5 +1,6 @@
 import { ai, type AiMessage } from '@cxxi-lab/hubbyware-sdk'
 import { conversations, type ConversationDoc, type MessageDoc } from './data'
+import { replayed } from './agent'
 
 /**
  * What the model gets of a conversation (client docs/plan-ia-chat.md § 2.4, D4): its instructions, a
@@ -14,7 +15,8 @@ const CHARS_PER_TOKEN = 3.2
 const CONTEXT_TOKENS = 8_192
 export const ANSWER_TOKENS = 2_048
 /** what the transcript may take: the context, less the answer and the instructions */
-const BUDGET = (CONTEXT_TOKENS - ANSWER_TOKENS - 700) * CHARS_PER_TOKEN
+const BASE_BUDGET = (CONTEXT_TOKENS - ANSWER_TOKENS - 700) * CHARS_PER_TOKEN
+const BUDGET = BASE_BUDGET
 /** once summarized, the recent messages kept take at most this share: not a summary at every turn */
 const KEEP_SHARE = 0.5
 const SUMMARY_TOKENS = 600
@@ -27,17 +29,19 @@ export const SYSTEM = [
 const today = () => `Today is ${new Date().toDateString()}.`
 
 /** A message as the model gets it: one too long for the budget alone is cut (the conversation keeps it whole). */
-function forModel(m: Pick<MessageDoc, 'role' | 'content'>): AiMessage {
+function forModel(m: MessageDoc): AiMessage {
+	// an earlier tool call: a short note of what it did
+	if (m.role === 'tool') return replayed(m) ?? { role: 'assistant', content: '[a tool was used]' }
 	const max = BUDGET * KEEP_SHARE
 	const content = m.content.length > max ? `${m.content.slice(0, max / 2)}\n\n[… ${Math.round((m.content.length - max) / 1000)}k characters left out …]\n\n${m.content.slice(-max / 2)}` : m.content
 	return { role: m.role === 'assistant' ? 'assistant' : 'user', content }
 }
 
-const size = (m: AiMessage) => m.content.length + 20
+const size = (m: AiMessage) => m.content.length + 20 + (m.tool_calls ? JSON.stringify(m.tool_calls).length : 0)
 
-/** The messages since the last summary (the conversation's `summaryUpTo`). */
+/** The messages since the last summary (the conversation's `summaryUpTo`); an answer that only called tools is left out (its calls stay). */
 export function sinceSummary(conv: Pick<ConversationDoc, 'summaryUpTo'>, history: MessageDoc[]): MessageDoc[] {
-	const chat = history.filter(m => m.role !== 'tool')
+	const chat = history.filter(m => !(m.role === 'assistant' && m.toolCalls && !m.content.trim()))
 	const at = conv.summaryUpTo ? chat.findIndex(m => m.id === conv.summaryUpTo) : -1
 	return at >= 0 ? chat.slice(at + 1) : chat
 }
@@ -77,17 +81,19 @@ async function summarize(model: string, before: string | null, messages: Message
  * The transcript for the model's next answer — summarizing first (and saving it) when the messages
  * since the last summary no longer fit. Returns the conversation as it now is (its summary).
  */
-export async function contextFor(conv: ConversationDoc, history: MessageDoc[], onSummarizing?: () => void): Promise<{ messages: AiMessage[], conversation: ConversationDoc }> {
+export async function contextFor(conv: ConversationDoc, history: MessageDoc[], onSummarizing?: () => void, tools?: { instructions: string, chars: number }): Promise<{ messages: AiMessage[], conversation: ConversationDoc }> {
+	// the tools' schemas and instructions take their share of the context
+	const budget = Math.max(BASE_BUDGET * 0.4, BASE_BUDGET - (tools?.chars ?? 0))
 	let current = conv
 	let recent = sinceSummary(conv, history)
 	const total = recent.reduce((n, m) => n + size(forModel(m)), 0) + (conv.summary?.length ?? 0)
-	if (total > BUDGET && recent.length > 1) {
+	if (total > budget && recent.length > 1) {
 		// the newest messages that fit in KEEP_SHARE stay; everything before goes into the summary
 		let kept = 0
 		let cut = recent.length - 1
 		for (let i = recent.length - 1; i >= 1; i--) {
 			kept += size(forModel(recent[i]))
-			if (kept > BUDGET * KEEP_SHARE) break
+			if (kept > budget * KEEP_SHARE) break
 			cut = i
 		}
 		const older = recent.slice(0, cut)
@@ -98,14 +104,14 @@ export async function contextFor(conv: ConversationDoc, history: MessageDoc[], o
 			recent = recent.slice(cut)
 		}
 	}
-	const system: AiMessage = { role: 'system', content: `${SYSTEM} ${today()}${current.summary ? `\n\nEarlier in this conversation (a summary): ${current.summary}` : ''}` }
+	const system: AiMessage = { role: 'system', content: `${SYSTEM} ${today()}${tools ? ` ${tools.instructions}` : ''}${current.summary ? `\n\nEarlier in this conversation (a summary): ${current.summary}` : ''}` }
 	// the most recent that fit (in case an estimate was off): newest first, the last one always
 	const kept: AiMessage[] = []
 	let chars = size(system)
 	for (let i = recent.length - 1; i >= 0; i--) {
 		const m = forModel(recent[i])
 		chars += size(m)
-		if (chars > BUDGET && kept.length > 0) break
+		if (chars > budget && kept.length > 0) break
 		kept.unshift(m)
 	}
 	return { messages: [system, ...kept], conversation: current }

@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowLeft, faArrowsRotate, faCopy, faMicrochip, faPlug, faPen, faStop, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { Button, ConfirmationModal, Markdown } from '@cxxi-lab/hubbyware-ui'
 import type { MessageDoc } from '../lib/data'
+import { traceOf } from '../lib/agent'
 
 /**
  * A conversation (client docs/plan-ia-chat.md § 2.5): its messages (an assistant's in Markdown, with
@@ -19,6 +20,26 @@ function CopyButton({ text }: { text: string }) {
 			className="bg-transparent border-0 p-0 text-xs text-steel-400 hover:text-white cursor-pointer">
 			<FontAwesomeIcon icon={faCopy} /> {copied ? 'Copied' : 'Copy'}
 		</button>
+	)
+}
+
+const CONFIRMATION: Record<string, string> = { none: '', allowed: 'you allowed it', 'allowed-for-conversation': 'allowed in this conversation', denied: 'you refused it' }
+
+/** One call of the assistant (its trace): the hubby and the action, what the user said, its input and result. */
+function ToolCall({ m }: { m: MessageDoc }) {
+	const t = traceOf(m)
+	if (!t) return null
+	const failed = !t.ok
+	return (
+		<details data-role="tool" data-ok={t.ok} data-confirmation={t.confirmation} className="rounded border border-steel-800 px-3 py-1.5 text-xs text-steel-400">
+			<summary className="cursor-pointer">
+				<span className={failed ? 'text-amber-300' : 'text-emerald-300'}>{failed ? '✕' : '✓'}</span>{' '}
+				<span className="text-steel-200">{t.hubbyLabel}</span> · {t.method}
+				{CONFIRMATION[t.confirmation] && <> · {CONFIRMATION[t.confirmation]}</>}
+			</summary>
+			<pre className="m-0 mt-2 whitespace-pre-wrap break-words text-steel-300">{JSON.stringify(t.arguments, null, 2)}</pre>
+			<pre className="m-0 mt-2 max-h-60 overflow-auto whitespace-pre-wrap break-words text-steel-400">{m.content}</pre>
+		</details>
 	)
 }
 
@@ -56,7 +77,8 @@ export function ChatView({ title, summary, history, streaming, busy, error, read
 	const [editing, setEditing] = useState<string | null>(null)
 	const [removing, setRemoving] = useState(false)
 	const end = useRef<HTMLDivElement>(null)
-	const shown = history.filter(m => m.role !== 'tool')
+	// an answer that only called tools shows as its calls
+	const shown = history.filter(m => !(m.role === 'assistant' && m.toolCalls && !m.content.trim()))
 	const last = shown.at(-1)
 	useEffect(() => { end.current?.scrollIntoView({ block: 'end' }) }, [shown.length, streaming?.text])
 
@@ -110,7 +132,7 @@ export function ChatView({ title, summary, history, streaming, busy, error, read
 					{shown.length === 0 && !streaming && (
 						<p className="m-0 mt-8 text-center text-sm text-steel-400">{readOnly ? 'AI models don\'t run on this device: your conversations can be read here, and continued on a device that runs them.' : 'Ask anything. The model runs on this device: nothing you write leaves it.'}</p>
 					)}
-					{shown.map(m => [m.role === 'user' ? (
+					{shown.map(m => [m.role === 'tool' ? <ToolCall key={m.id} m={m} /> : m.role === 'user' ? (
 						<div key={m.id} data-role="user" className="self-end max-w-[85%] rounded-lg bg-primary-500/20 px-3 py-2 text-sm text-white whitespace-pre-wrap break-words">{m.content}</div>
 					) : (
 						<div key={m.id} data-role="assistant" className="flex flex-col gap-1">
