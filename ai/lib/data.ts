@@ -5,7 +5,8 @@ import { collection, type HubbyDocument } from '@cxxi-lab/hubbyware-sdk'
  * hubby, on the device and synced, their texts encrypted (the server relays them without reading).
  */
 
-export type Engine = 'local' | 'claude-code'
+/** local (a model on the device), else a device agent's id (claude-code, gemini-cli, codex…) */
+export type Engine = string
 
 export interface Conversation {
 	title: string
@@ -41,9 +42,9 @@ export const listConversations = () => conversations.findAll({ sort: '-lastMessa
 export const messagesOf = (id: string) => messages.findAll({ filter: { conversation: id }, sort: '_createdAt' })
 	.then(list => list.sort((a, b) => a._createdAt.localeCompare(b._createdAt) || a.id.localeCompare(b.id)))
 
-export function newConversation(firstMessage: string, model: string): Promise<ConversationDoc> {
+export function newConversation(firstMessage: string, model: string, engine: Engine = 'local'): Promise<ConversationDoc> {
 	const line = firstMessage.replace(/\s+/g, ' ').trim()
-	return conversations.create({ title: line.length > 48 ? `${line.slice(0, 47)}…` : line || 'New chat', model, engine: 'local', lastMessageAt: new Date().toISOString() })
+	return conversations.create({ title: line.length > 48 ? `${line.slice(0, 47)}…` : line || 'New chat', model, engine, lastMessageAt: new Date().toISOString() })
 }
 
 export async function addMessage(message: Message): Promise<MessageDoc> {

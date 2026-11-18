@@ -81,3 +81,21 @@ export function replayed(m: MessageDoc): AiMessage | null {
 	const what = t.confirmation === 'denied' ? 'the user refused it' : m.content
 	return { role: 'assistant', content: `[I used ${t.hubbyLabel} ${t.method} ${JSON.stringify(t.arguments ?? {})}: ${what.slice(0, 1_500)}]` }
 }
+
+// --- a device agent as the engine (client docs/plan-ia-agent.md, phase 4) ---
+
+const TRANSCRIPT_CHARS = 60_000
+
+/** The conversation so far as plain text, for an agent that has no session of it on this device (the newest kept). */
+export function transcriptOf(history: MessageDoc[], summary: string | null | undefined): string | null {
+	const lines: string[] = []
+	for (const m of history) {
+		if (m.role === 'user') lines.push(`User: ${m.content}`)
+		else if (m.role === 'assistant' && m.content.trim()) lines.push(`Assistant: ${m.content}`)
+		else if (m.role === 'tool') { const r = replayed(m); if (r) lines.push(`Assistant: ${r.content}`) }
+	}
+	let text = lines.join('\n\n')
+	if (text.length > TRANSCRIPT_CHARS) text = `[…]\n\n${text.slice(-TRANSCRIPT_CHARS)}`
+	if (summary) text = `(A summary of the earliest part: ${summary})\n\n${text}`
+	return text.trim() || null
+}
