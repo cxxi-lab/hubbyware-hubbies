@@ -5,6 +5,7 @@ import { Mail } from './pages/Mail'
 import { MailSettings } from './settings/MailSettings'
 import { MailSettingsPage } from './settings/MailSettingsPage'
 import './hubby.css'
+import { mailApi } from './api/assistant'
 
 export const mailManifest: HubbyManifest = {
 	id: 'mail',
@@ -19,4 +20,4 @@ export const mailManifest: HubbyManifest = {
 }
 
 // run isolated (client docs/plan-isolation.md): its frame runs this definition
-export default defineHubby(mailManifest)
+export default defineHubby({ ...mailManifest, api: mailApi })

@@ -1,0 +1,317 @@
+{
+	"methods": {
+		"mail.accounts": {
+			"description": "The user's mailboxes and their folders (with how many unread)",
+			"effect": "read",
+			"input": {
+				"type": "object",
+				"additionalProperties": false,
+				"properties": {}
+			},
+			"output": {
+				"type": "array",
+				"items": {
+					"type": "object",
+					"required": [
+						"id",
+						"email",
+						"folders"
+					],
+					"properties": {
+						"id": {
+							"type": "string"
+						},
+						"label": {
+							"type": "string"
+						},
+						"email": {
+							"type": "string"
+						},
+						"folders": {
+							"type": "array",
+							"items": {
+								"type": "object",
+								"required": [
+									"id",
+									"name"
+								],
+								"properties": {
+									"id": {
+										"type": "string"
+									},
+									"name": {
+										"type": "string"
+									},
+									"role": {
+										"type": [
+											"string",
+											"null"
+										]
+									},
+									"unread": {
+										"type": "integer"
+									},
+									"total": {
+										"type": "integer"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"mail.messages": {
+			"description": "The latest messages of a folder (the first mailbox's inbox by default), newest first",
+			"effect": "read",
+			"input": {
+				"type": "object",
+				"additionalProperties": false,
+				"properties": {
+					"folder": {
+						"type": "string",
+						"description": "a folder's id (mail.accounts), or a role: inbox, sent, drafts, trash, archive, spam"
+					},
+					"account": {
+						"type": "string",
+						"description": "a mailbox's id or address, with a role"
+					},
+					"limit": {
+						"type": "integer",
+						"minimum": 1,
+						"maximum": 50
+					},
+					"unreadOnly": {
+						"type": "boolean"
+					}
+				}
+			},
+			"output": {
+				"type": "array",
+				"items": {
+					"type": "object",
+					"required": [
+						"id",
+						"date"
+					],
+					"properties": {
+						"id": {
+							"type": "string"
+						},
+						"subject": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"from": {
+							"type": [
+								"object",
+								"null"
+							],
+							"properties": {
+								"name": {
+									"type": [
+										"string",
+										"null"
+									]
+								},
+								"address": {
+									"type": "string"
+								}
+							}
+						},
+						"date": {
+							"type": "string"
+						},
+						"snippet": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"seen": {
+							"type": "boolean"
+						},
+						"flagged": {
+							"type": "boolean"
+						},
+						"hasAttachments": {
+							"type": "boolean"
+						}
+					}
+				}
+			}
+		},
+		"mail.read": {
+			"description": "One message's text (by its id, from mail.messages); opening it marks it read",
+			"effect": "read",
+			"input": {
+				"type": "object",
+				"additionalProperties": false,
+				"required": [
+					"id"
+				],
+				"properties": {
+					"id": {
+						"type": "string"
+					}
+				}
+			},
+			"output": {
+				"type": "object",
+				"required": [
+					"id",
+					"text"
+				],
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"subject": {
+						"type": [
+							"string",
+							"null"
+						]
+					},
+					"from": {
+						"type": [
+							"object",
+							"null"
+						],
+						"properties": {
+							"name": {
+								"type": [
+									"string",
+									"null"
+								]
+							},
+							"address": {
+								"type": "string"
+							}
+						}
+					},
+					"date": {
+						"type": "string"
+					},
+					"snippet": {
+						"type": [
+							"string",
+							"null"
+						]
+					},
+					"seen": {
+						"type": "boolean"
+					},
+					"flagged": {
+						"type": "boolean"
+					},
+					"hasAttachments": {
+						"type": "boolean"
+					},
+					"to": {
+						"type": "array",
+						"items": {
+							"type": [
+								"object",
+								"null"
+							],
+							"properties": {
+								"name": {
+									"type": [
+										"string",
+										"null"
+									]
+								},
+								"address": {
+									"type": "string"
+								}
+							}
+						}
+					},
+					"cc": {
+						"type": "array",
+						"items": {
+							"type": [
+								"object",
+								"null"
+							],
+							"properties": {
+								"name": {
+									"type": [
+										"string",
+										"null"
+									]
+								},
+								"address": {
+									"type": "string"
+								}
+							}
+						}
+					},
+					"text": {
+						"type": "string"
+					},
+					"attachments": {
+						"type": "array",
+						"items": {
+							"type": "string"
+						}
+					}
+				}
+			}
+		},
+		"mail.send": {
+			"description": "Sends an email from one of the user's mailboxes (the first by default); a reply when replyTo is a message's id",
+			"effect": "outward",
+			"input": {
+				"type": "object",
+				"additionalProperties": false,
+				"required": [
+					"to",
+					"subject",
+					"text"
+				],
+				"properties": {
+					"to": {
+						"type": "string",
+						"description": "addresses, comma-separated"
+					},
+					"cc": {
+						"type": "string"
+					},
+					"subject": {
+						"type": "string",
+						"maxLength": 998
+					},
+					"text": {
+						"type": "string",
+						"maxLength": 200000
+					},
+					"account": {
+						"type": "string",
+						"description": "a mailbox's id or address"
+					},
+					"replyTo": {
+						"type": "string",
+						"description": "the id of the message it answers"
+					}
+				}
+			},
+			"output": {
+				"type": "object",
+				"required": [
+					"sent"
+				],
+				"properties": {
+					"sent": {
+						"type": "boolean"
+					},
+					"from": {
+						"type": "string"
+					}
+				}
+			}
+		}
+	}
+}
