@@ -8,7 +8,7 @@ import { EventModal } from '../components/EventModal'
 import { fetchEventCategories, type EventCategory } from '../api/eventCategories'
 import { fetchEvents, type PlannerEvent } from '../api/events'
 import type { PlannerItem } from '../lib/plannerItems'
-import { useBackHandler, useContributions, useMediaQuery, type TimelineItem } from '@cxxi-lab/hubbyware-sdk'
+import { useBackHandler, useMediaQuery, type TimelineItem } from '@cxxi-lab/hubbyware-sdk'
 import {
 	addDays,
 	addMonths,
@@ -30,7 +30,6 @@ interface EventModalState {
 
 export function Planner() {
 	const navigate = useNavigate()
-	const contributions = useContributions('timeline')
 
 	const [view, setView] = useState<PlannerView>('month')
 	const [anchor, setAnchor] = useState(() => startOfDay(new Date()))
@@ -38,12 +37,13 @@ export function Planner() {
 
 	const [categories, setCategories] = useState<EventCategory[]>([])
 	const [events, setEvents] = useState<PlannerEvent[]>([])
-	const [timelineItems, setTimelineItems] = useState<TimelineItem[]>([])
+	// the dated items of other hubbies (Workout's sessions…): none while the hubbies run isolated,
+	// until they reach each other through their APIs (client docs/plan-isolation.md D2)
+	const timelineItems: TimelineItem[] = []
 	const [search, setSearch] = useState('')
 	const [selectedCategoryIds, setSelectedCategoryIds] = useState<Set<string>>(new Set())
 	const [includeUncategorized, setIncludeUncategorized] = useState(true)
 	const [eventModal, setEventModal] = useState<EventModalState | null>(null)
-	const [detailItem, setDetailItem] = useState<TimelineItem | null>(null)
 
 	const visibleRange = useMemo(() => {
 		if (view === 'week') {
@@ -67,17 +67,7 @@ export function Planner() {
 		fetchEvents(visibleRange.start, visibleRange.end)
 			.then(setEvents)
 			.catch(err => console.warn('[planner] events fetch failed', err))
-
-		// Pull dated items contributed by other hubbies (timeline capability) — the planner
-		// never imports them, it only calls their timeline contribution.
-		Promise.all(
-			contributions.map(c =>
-				c.value.items(visibleRange.start, visibleRange.end).catch(() => [] as TimelineItem[])
-			)
-		)
-			.then(lists => setTimelineItems(lists.flat()))
-			.catch(err => console.warn('[planner] timeline fetch failed', err))
-	}, [visibleRange.start, visibleRange.end, contributions])
+	}, [visibleRange.start, visibleRange.end])
 
 	useEffect(() => { reload() }, [reload])
 
@@ -139,16 +129,9 @@ export function Planner() {
 			setEventModal({ mode: 'edit', event: item.event, date: null })
 			return
 		}
-		// contributed item: open the hubby's own detail view in place if it provides one,
-		// otherwise deep-link to the item's home in its hubby.
-		const contributor = contributions.find(c => c.hubbyId === item.item.hubbyId)
-		if (contributor?.value.renderDetail) setDetailItem(item.item)
-		else navigate(item.item.href)
+		// another hubby's item: its page
+		navigate(item.item.href)
 	}
-
-	const detailContributor = detailItem
-		? contributions.find(c => c.hubbyId === detailItem.hubbyId)
-		: undefined
 
 	const phone = useMediaQuery('(width < 40rem)')
 	const [filtersOpen, setFiltersOpen] = useState(false)
@@ -221,10 +204,6 @@ export function Planner() {
 				/>
 			)}
 
-			{detailItem && detailContributor?.value.renderDetail?.(detailItem, {
-				onClose: () => setDetailItem(null),
-				onChanged: () => { setDetailItem(null); reload() }
-			})}
 		</div>
 	)
 }

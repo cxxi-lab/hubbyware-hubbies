@@ -1,12 +1,10 @@
 import { faChartLine, faClockRotateLeft, faDumbbell, faListCheck, faRepeat } from '@fortawesome/free-solid-svg-icons'
-import { defineHubby, describe, type HubbyManifest, type TimelineItem } from '@cxxi-lab/hubbyware-sdk'
+import { defineHubby, describe, type HubbyManifest } from '@cxxi-lab/hubbyware-sdk'
 import info from './hubby.json'
 import { WorkoutsPrograms } from './pages/WorkoutsPrograms'
 import { WorkoutsHistory } from './pages/WorkoutsHistory'
 import { WorkoutsGreasingGroove } from './pages/WorkoutsGreasingGroove'
 import { WorkoutsStats } from './pages/WorkoutsStats'
-import { fetchSessions, type WorkoutSessionSummary } from './api/workoutSessions'
-import { WorkoutSessionModal } from './components/WorkoutSessionModal'
 import './hubby.css'
 
 export const workoutManifest: HubbyManifest = {
@@ -28,34 +26,6 @@ export const workoutManifest: HubbyManifest = {
 
 	// Planner's calendar: scheduled/performed sessions as dated items (the payload is only read
 	// back below, by this hubby).
-	contributes: {
-		timeline: {
-			async items(start, end) {
-				const sessions = await fetchSessions(start, end)
-				return sessions
-					.filter(s => s.performedAt ?? s.scheduledAt)
-					.map<TimelineItem>(s => ({
-						id: `workout:${s.id}`,
-						date: new Date((s.performedAt ?? s.scheduledAt) as string),
-						title: s.programLabel,
-						hubbyId: 'workout',
-						href: '/workout/history',
-						color: '#059669',
-						payload: s
-					}))
-			},
-			renderDetail(item, { onClose, onChanged }) {
-				return (
-					<WorkoutSessionModal
-						mode="edit"
-						session={item.payload as WorkoutSessionSummary}
-						onClose={onClose}
-						onSaved={onChanged}
-					/>
-				)
-			}
-		}
-	}
 }
 
 // run isolated (client docs/plan-isolation.md): its frame runs this definition
