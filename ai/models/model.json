@@ -1,0 +1,10 @@
+{
+	"collection": "model",
+	"version": 1,
+	"description": "A model the user added from a Hugging Face link (client docs/plan-ia-chat.md § 2.6): pinned when the device read the repo",
+	"fields": {
+		"name": { "type": "string", "max": 20, "required": true, "description": "its name as a model (u-<its first file's sha256>)" },
+		"label": { "type": "string", "max": 120, "required": true, "encrypted": true },
+		"spec": { "type": "text", "max": 20000, "required": true, "encrypted": true, "description": "JSON: repo, revision (a commit), files (path, sha256, size), requires (vram, ram)" }
+	}
+}

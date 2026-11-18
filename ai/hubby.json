@@ -1,13 +1,14 @@
 {
 	"id": "ai",
 	"version": "1.8.0",
-	"sdk": "^3.14.0",
+	"sdk": "^3.15.0",
 	"label": "AI",
 	"description": "Chat with AI models running on this device",
 	"icon": "comments",
 	"isolated": true,
 	"scopes": [
-		"app:ai"
+		"app:ai",
+		"app:ai-links"
 	],
 	"ai": {
 		"chat": {

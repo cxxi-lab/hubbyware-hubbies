@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faArrowLeft, faArrowsRotate, faCopy, faPen, faStop, faTrash } from '@fortawesome/free-solid-svg-icons'
+import { faArrowLeft, faArrowsRotate, faCopy, faMicrochip, faPen, faStop, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { Button, ConfirmationModal, Markdown } from '@cxxi-lab/hubbyware-ui'
 import type { MessageDoc } from '../lib/data'
 
@@ -22,12 +22,12 @@ function CopyButton({ text }: { text: string }) {
 	)
 }
 
-function stats(m: MessageDoc): string | null {
-	if (!m.tokens || !m.seconds) return m.model ?? null
-	return `${m.model ?? ''} · ${m.tokens} tokens · ${(m.tokens / m.seconds).toFixed(0)} t/s`
+function stats(m: MessageDoc, label: (name: string | null | undefined) => string): string | null {
+	if (!m.tokens || !m.seconds) return m.model ? label(m.model) : null
+	return `${label(m.model)} · ${m.tokens} tokens · ${(m.tokens / m.seconds).toFixed(0)} t/s`
 }
 
-export function ChatView({ title, summary, history, streaming, busy, error, readOnly, onSend, onStop, onRegenerate, onBack, onRename, onRemove }: {
+export function ChatView({ title, summary, history, streaming, busy, error, readOnly, onSend, onStop, onRegenerate, onBack, onRename, onRemove, models, model, modelLabel, onModel, onManageModels }: {
 	title: string | null
 	/** what the model keeps of the older messages (its summary, up to which message) */
 	summary: { text: string, upTo: string | null } | null
@@ -43,6 +43,12 @@ export function ChatView({ title, summary, history, streaming, busy, error, read
 	/** the conversation open: renamed, deleted */
 	onRename?: (title: string) => void
 	onRemove?: () => void
+	/** the models it may run on (the built-in one, the ones added by link), the one it runs on */
+	models: Array<{ name: string, label: string }>
+	model: string
+	modelLabel: (name: string | null | undefined) => string
+	onModel?: (name: string) => void
+	onManageModels?: () => void
 }) {
 	const [draft, setDraft] = useState('')
 	const [editing, setEditing] = useState<string | null>(null)
@@ -70,6 +76,16 @@ export function ChatView({ title, summary, history, streaming, busy, error, read
 						className="flex-1 min-w-0 rounded bg-steel-800 px-2 py-1 text-base font-semibold text-white outline-none ring-1 ring-primary-500" />
 				) : (
 					<h1 className="m-0 flex-1 min-w-0 truncate text-base font-semibold text-white">{title ?? 'New chat'}</h1>
+				)}
+				{onModel && (
+					<select value={model} onChange={e => onModel(e.target.value)} disabled={busy} data-testid="model" aria-label="Model"
+						className="max-w-52 truncate rounded bg-steel-800 px-2 py-1 text-xs text-steel-100 outline-none border-0">
+						{models.map(o => <option key={o.name} value={o.name}>{o.label}</option>)}
+						{!models.some(o => o.name === model) && <option value={model}>{modelLabel(model) || model} (removed)</option>}
+					</select>
+				)}
+				{onManageModels && (
+					<button type="button" aria-label="Models" title="Models" onClick={onManageModels} className="shrink-0 bg-transparent border-0 p-1 text-xs text-steel-400 hover:text-white cursor-pointer"><FontAwesomeIcon icon={faMicrochip} /></button>
 				)}
 				{onRename && editing === null && (
 					<button type="button" aria-label="Rename" onClick={() => setEditing(title ?? '')} className="shrink-0 bg-transparent border-0 p-1 text-xs text-steel-400 hover:text-white cursor-pointer"><FontAwesomeIcon icon={faPen} /></button>
@@ -99,7 +115,7 @@ export function ChatView({ title, summary, history, streaming, busy, error, read
 								{m === last && !busy && !readOnly && (
 									<button type="button" onClick={onRegenerate} className="bg-transparent border-0 p-0 text-xs text-steel-400 hover:text-white cursor-pointer"><FontAwesomeIcon icon={faArrowsRotate} /> Regenerate</button>
 								)}
-								<span data-testid="stats">{stats(m)}</span>
+								<span data-testid="stats">{stats(m, modelLabel)}</span>
 							</div>
 						</div>
 					), m.id === summary?.upTo && (

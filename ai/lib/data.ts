@@ -60,3 +60,15 @@ export async function removeConversation(id: string): Promise<void> {
 	}
 	await conversations.remove(id)
 }
+
+// --- models added by link (client docs/plan-ia-chat.md § 2.6) ---
+
+export interface AddedModel { name: string, label: string, spec: string }
+export type AddedModelDoc = AddedModel & HubbyDocument
+
+export const addedModels = collection<AddedModel>('model')
+export const listAddedModels = () => addedModels.findAll({ sort: '_createdAt' })
+
+/** the model of a new conversation, and the built-in one's label */
+export const BUILT_IN = 'chat'
+export const BUILT_IN_LABEL = 'Qwen3 (built in)'

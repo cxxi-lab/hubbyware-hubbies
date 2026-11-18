@@ -3,7 +3,8 @@ import { useLocation, useNavigate } from 'react-router'
 import { ai, errorMessage, nav, platform, useAppState } from '@cxxi-lab/hubbyware-sdk'
 import { ConversationList, groupOf } from '../components/ConversationList'
 import { ChatView, type Streaming } from '../components/ChatView'
-import { addMessage, conversations, listConversations, messages, messagesOf, newConversation, removeConversation, type ConversationDoc, type MessageDoc } from '../lib/data'
+import { addedModels, addMessage, BUILT_IN, BUILT_IN_LABEL, conversations, listAddedModels, listConversations, messages, messagesOf, newConversation, removeConversation, type AddedModelDoc, type ConversationDoc, type MessageDoc } from '../lib/data'
+import { ModelsDialog } from '../components/ModelsDialog'
 import { ANSWER_TOKENS, contextFor } from '../lib/context'
 import { proposeTitle } from '../lib/title'
 
@@ -14,8 +15,6 @@ import { proposeTitle } from '../lib/title'
  * device (`ai.chat`), saved once done — an answer stopped midway is kept as it is.
  */
 
-/** the model of a new conversation: the hubby's (hubby.json "ai") */
-const MODEL = 'chat'
 
 export function ChatApp() {
 	const { pathname } = useLocation()
@@ -50,6 +49,31 @@ export function ChatApp() {
 	useEffect(() => messages.onChange(() => void reloadHistory(activeRef.current)), [reloadHistory])
 
 	const conversation = list?.find(c => c.id === active) ?? null
+
+	// the models added by link (synced), handed to this device to offer them (allowed, downloaded as the others)
+	const [added, setAdded] = useState<AddedModelDoc[]>([])
+	const [modelsOpen, setModelsOpen] = useState(false)
+	const [nextModel, setNextModel] = useState(BUILT_IN)
+	useEffect(() => {
+		const reload = () => void listAddedModels().then(list => {
+			setAdded(list)
+			if (platform.capabilities.localAi) {
+				void ai.models.set(list.flatMap(m => {
+					try { return [{ name: m.name, label: m.label, ...(JSON.parse(m.spec) as { repo: string, revision: string, files: Array<{ path: string, sha256: string, size: number }>, requires: { vram: number, ram: number } }) }] }
+					catch { return [] }
+				})).catch(err => setError(errorMessage(err)))
+			}
+		})
+		reload()
+		return addedModels.onChange(reload)
+	}, [])
+	const modelOptions = [{ name: BUILT_IN, label: BUILT_IN_LABEL }, ...added.map(m => ({ name: m.name, label: m.label }))]
+	const modelLabel = (name: string | null | undefined) => modelOptions.find(o => o.name === name)?.label ?? name ?? ''
+	const currentModel = conversation?.model ?? nextModel
+	const changeModel = (name: string) => {
+		if (conversation) void conversations.update(conversation.id, { model: name }).then(reloadList)
+		else setNextModel(name)
+	}
 
 	// the conversations in the app's column (not on a phone: they are in this page there)
 	useEffect(() => {
@@ -114,7 +138,7 @@ export function ChatApp() {
 
 	const send = async (text: string) => {
 		try {
-			const conv = conversation ?? await newConversation(text, MODEL)
+			const conv = conversation ?? await newConversation(text, nextModel)
 			if (!conversation) {
 				await reloadList()
 				navigate(`/ai/c/${conv.id}`)
@@ -169,12 +193,18 @@ export function ChatApp() {
 			onBack={phone ? () => navigate('/ai') : undefined}
 			onRename={conversation ? (title => void conversations.update(conversation.id, { title }).then(reloadList)) : undefined}
 			onRemove={conversation ? (() => void remove(conversation.id)) : undefined}
+			models={modelOptions}
+			model={currentModel}
+			modelLabel={modelLabel}
+			onModel={readOnly ? undefined : changeModel}
+			onManageModels={readOnly ? undefined : () => setModelsOpen(true)}
 		/>
 	)
+	const dialog = modelsOpen && <ModelsDialog added={added} onClose={() => setModelsOpen(false)} />
 
 	if (phone) {
 		// the frame's viewport is its area: the page fills it, the composer at the bottom
-		return <div className="h-dvh min-h-0 flex flex-col">{active || pathname === '/ai/new' ? chatView : <div className="flex-1 min-h-0 p-4">{listView}</div>}</div>
+		return <div className="h-dvh min-h-0 flex flex-col">{active || pathname === '/ai/new' ? chatView : <div className="flex-1 min-h-0 p-4">{listView}</div>}{dialog}</div>
 	}
-	return <div className="h-dvh min-h-0 flex">{chatView}</div>
+	return <div className="h-dvh min-h-0 flex">{chatView}{dialog}</div>
 }
