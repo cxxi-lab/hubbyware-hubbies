@@ -18,8 +18,10 @@ export function groupOf(iso: string, now = new Date()): string {
 	return 'Earlier'
 }
 
-export function ConversationList({ items, active, onOpen, onNew, onRename, onRemove }: {
+export function ConversationList({ items, active, onOpen, onNew, onRename, onRemove, sectionOf = c => groupOf(c.lastMessageAt) }: {
 	items: ConversationDoc[] | null
+	/** its section in the list (by date; by device when they run on several) */
+	sectionOf?: (c: ConversationDoc) => string
 	active: string | null
 	onOpen: (id: string) => void
 	onNew: () => void
@@ -32,7 +34,7 @@ export function ConversationList({ items, active, onOpen, onNew, onRename, onRem
 	const shown = (items ?? []).filter(c => !query.trim() || c.title.toLowerCase().includes(query.trim().toLowerCase()))
 	const groups: Array<[string, ConversationDoc[]]> = []
 	for (const c of shown) {
-		const g = groupOf(c.lastMessageAt)
+		const g = sectionOf(c)
 		const last = groups.at(-1)
 		if (last?.[0] === g) last[1].push(c)
 		else groups.push([g, [c]])

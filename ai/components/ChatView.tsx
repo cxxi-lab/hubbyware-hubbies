@@ -105,7 +105,7 @@ export function ChatView({ title, summary, history, streaming, busy, error, read
 					<select value={model} onChange={e => onModel(e.target.value)} disabled={busy} data-testid="model" aria-label="Model"
 						className="max-w-52 truncate rounded bg-steel-800 px-2 py-1 text-xs text-steel-100 outline-none border-0">
 						{models.map(o => <option key={o.name} value={o.name}>{o.label}</option>)}
-						{!models.some(o => o.name === model) && <option value={model}>{modelLabel(model) || model} (removed)</option>}
+						{!models.some(o => o.name === model) && <option value={model}>{modelLabel(model) || model} (not available here)</option>}
 					</select>
 				)}
 				{onAssistant && (
@@ -130,7 +130,7 @@ export function ChatView({ title, summary, history, streaming, busy, error, read
 			<div className="flex-1 min-h-0 overflow-y-auto px-4 sm:px-6 py-4" data-testid="messages">
 				<div className="mx-auto max-w-3xl flex flex-col gap-4">
 					{shown.length === 0 && !streaming && (
-						<p className="m-0 mt-8 text-center text-sm text-steel-400">{readOnly ? 'AI models don\'t run on this device: your conversations can be read here, and continued on a device that runs them.' : 'Ask anything. The model runs on this device: nothing you write leaves it.'}</p>
+						<p className="m-0 mt-8 text-center text-sm text-steel-400">{readOnly ? 'Nothing can answer here right now: pick an engine above (another of your devices, the app open there), or continue on a device that runs AI models.' : 'Ask anything. The model runs on this device: nothing you write leaves it.'}</p>
 					)}
 					{shown.map(m => [m.role === 'tool' ? <ToolCall key={m.id} m={m} /> : m.role === 'user' ? (
 						<div key={m.id} data-role="user" className="self-end max-w-[85%] rounded-lg bg-primary-500/20 px-3 py-2 text-sm text-white whitespace-pre-wrap break-words">{m.content}</div>

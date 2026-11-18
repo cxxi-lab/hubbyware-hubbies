@@ -1,6 +1,6 @@
 {
 	"collection": "conversation",
-	"version": 2,
+	"version": 3,
 	"description": "A chat with an AI model (client docs/plan-ia-chat.md § 2.2): its messages are the message collection's",
 	"fields": {
 		"title": {
@@ -36,6 +36,11 @@
 			"type": "datetime",
 			"required": true,
 			"description": "its order in the list"
+		},
+		"device": {
+			"type": "string",
+			"max": 60,
+			"description": "the account's device (its session) whose engine runs it: another one's runs there, relayed (client docs/plan-ia-agent.md § 3.5)"
 		}
 	},
 	"indexes": [

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router'
-import { ai, errorMessage, nav, platform, useAppState, type AgentEngine, type AiMessage } from '@cxxi-lab/hubbyware-sdk'
+import { ai, errorMessage, nav, platform, useAppState, type AgentDevice, type AgentEngine, type AiMessage } from '@cxxi-lab/hubbyware-sdk'
 import { ConversationList, groupOf } from '../components/ConversationList'
 import { ChatView, type Streaming } from '../components/ChatView'
 import { addedModels, addMessage, BUILT_IN, BUILT_IN_LABEL, conversations, listAddedModels, listConversations, messages, messagesOf, newConversation, removeConversation, type AddedModelDoc, type ConversationDoc, type MessageDoc } from '../lib/data'
@@ -23,7 +23,6 @@ export function ChatApp() {
 	const navigate = useNavigate()
 	// the app's phone layout (not this frame's width: the app's column narrows it)
 	const { phone } = useAppState()
-	const readOnly = !platform.capabilities.localAi
 	const active = /^\/ai\/c\/([^/]+)/.exec(pathname)?.[1] ?? null
 
 	const [list, setList] = useState<ConversationDoc[] | null>(null)
@@ -60,6 +59,18 @@ export function ChatApp() {
 	// the device's AI agents that may answer instead of a local model (desktop: Claude Code, ACP agents)
 	const [engines, setEngines] = useState<AgentEngine[]>([])
 	useEffect(() => { void ai.agent.engines().then(list => setEngines(list.filter(e => e.available)), () => {}) }, [])
+	// the account's other devices, up or not, and their engines (a turn may run on one: relayed there)
+	const [devices, setDevices] = useState<AgentDevice[]>([])
+	const [me, setMe] = useState<string | null>(null)
+	useEffect(() => {
+		void ai.agent.thisDevice().then(setMe, () => {})
+		const reload = () => void ai.agent.devices().then(setDevices, () => {})
+		reload()
+		const timer = setInterval(reload, 30_000)
+		return () => clearInterval(timer)
+	}, [])
+	const deviceOf = (id: string | null | undefined) => devices.find(d => d.id === id)
+	const remote = (id: string | null | undefined) => !!id && !!me && id !== me
 	useEffect(() => {
 		const reload = () => void listAddedModels().then(list => {
 			setAdded(list)
@@ -73,31 +84,60 @@ export function ChatApp() {
 		reload()
 		return addedModels.onChange(reload)
 	}, [])
-	// an agent's option: agent:<its id>
+	// an agent's option: agent:<its id>, another device's: agent:<its id>@<that device>
+	const localAi = platform.capabilities.localAi
 	const modelOptions = [
-		{ name: BUILT_IN, label: BUILT_IN_LABEL },
-		...added.map(m => ({ name: m.name, label: m.label })),
-		...engines.map(e => ({ name: `agent:${e.id}`, label: `${e.label}${e.signedIn === false ? ' (not signed in)' : ''}` }))
+		...(localAi ? [{ name: BUILT_IN, label: BUILT_IN_LABEL }, ...added.map(m => ({ name: m.name, label: m.label }))] : []),
+		...engines.map(e => ({ name: `agent:${e.id}`, label: `${e.label}${e.signedIn === false ? ' (not signed in)' : ''}` })),
+		...devices.filter(d => !d.current && d.online).flatMap(d => d.engines.filter(e => e.id !== 'chat').map(e => ({ name: `agent:${e.id}@${d.id}`, label: `${e.label} · ${d.label}` })))
 	]
-	const engineLabel = (id: string) => engines.find(e => e.id === id)?.label ?? id
+	const parseChoice = (name: string) => {
+		const m = /^agent:([^@]+)(?:@(.+))?$/.exec(name)
+		return m ? { engine: m[1], device: m[2] ?? me } : { engine: 'local', device: me }
+	}
+	const engineLabel = (id: string) => engines.find(e => e.id === id)?.label ?? devices.flatMap(d => d.engines).find(e => e.id === id)?.label ?? id
 	// an answer's model: a local model, or a device agent (by its id)
-	const modelLabel = (name: string | null | undefined) => name?.startsWith('agent:') ? engineLabel(name.slice(6)) : modelOptions.find(o => o.name === name)?.label ?? engines.find(e => e.id === name)?.label ?? name ?? ''
-	const currentModel = conversation ? (conversation.engine && conversation.engine !== 'local' ? `agent:${conversation.engine}` : conversation.model) : nextModel
+	const engineLabelAnywhere = (id: string) => engines.find(e => e.id === id)?.label ?? devices.flatMap(d => d.engines).find(e => e.id === id)?.label ?? id
+	const agentLabel = (choice: string) => {
+		const [engine, device] = choice.slice(6).split('@')
+		return device ? `${engineLabelAnywhere(engine)} · ${deviceOf(device)?.label ?? 'another device'}` : engineLabelAnywhere(engine)
+	}
+	const modelLabel = (name: string | null | undefined) => modelOptions.find(o => o.name === name)?.label ?? (name?.startsWith('agent:') ? agentLabel(name) : engines.find(e => e.id === name)?.label ?? devices.flatMap(d => d.engines).find(e => e.id === name)?.label ?? name ?? '')
+	const currentModel = conversation
+		? (conversation.engine && conversation.engine !== 'local' ? `agent:${conversation.engine}${remote(conversation.device) ? `@${conversation.device}` : ''}` : conversation.model)
+		: nextModel
+	// what may answer here now: a local model (where they run), this device's agent, another device's that is up
+	const canRun = (choice: string) => {
+		const { engine, device } = parseChoice(choice)
+		if (engine === 'local') return !!localAi
+		if (!remote(device)) return engines.some(e => e.id === engine)
+		return !!deviceOf(device)?.online && !!deviceOf(device)?.engines.some(e => e.id === engine)
+	}
+	const readOnly = !canRun(currentModel)
+	// none of this device's models: the first engine offered
+	useEffect(() => { if (!localAi && nextModel === BUILT_IN && modelOptions[0]) setNextModel(modelOptions[0].name) }, [modelOptions.length])
 	/** a local model, or a device agent (its engine): the conversation goes on with it (replayed to it) */
 	const changeModel = (name: string) => {
-		const engine = name.startsWith('agent:') ? name.slice(6) : 'local'
-		if (conversation) void conversations.update(conversation.id, engine === 'local' ? { model: name, engine } : { engine }).then(reloadList)
+		const { engine, device } = parseChoice(name)
+		if (conversation) void conversations.update(conversation.id, engine === 'local' ? { model: name, engine, device } : { engine, device }).then(reloadList)
 		else setNextModel(name)
 	}
+
+	// by date; by the device that runs them when they run on several (client docs/plan-ia-agent.md § 3.5)
+	const byDevice = new Set((list ?? []).map(c => c.device ?? '')).size > 1
+	const sectionOf = (c: ConversationDoc) => !byDevice ? groupOf(c.lastMessageAt)
+		: !c.device ? 'Earlier'
+		: c.device === me ? 'This device'
+		: deviceOf(c.device)?.label ?? 'Another device'
 
 	// the conversations in the app's column (not on a phone: they are in this page there)
 	useEffect(() => {
 		if (phone) { nav.clearItems(); return }
-		nav.setItems((list ?? []).map(c => ({ path: `/c/${c.id}`, label: c.title, section: groupOf(c.lastMessageAt) })), {
+		nav.setItems((list ?? []).map(c => ({ path: `/c/${c.id}`, label: c.title, section: sectionOf(c) })), {
 			action: { label: 'New chat', onClick: () => navigate('/ai') },
 			search: 'Search'
 		})
-	}, [list, phone])
+	}, [list, phone, me, devices])
 
 	/**
 	 * The model's answer to the conversation as it stands, saved once done (or stopped). With hubbies
@@ -123,7 +163,7 @@ export function ChatApp() {
 		const saving: Promise<unknown>[] = []
 		try {
 			const last = upTo.at(-1)!
-			const result = await ai.agent.run({ engine: conv.engine, conversation: conv.id, text: last.content, transcript: transcriptOf(upTo.slice(0, -1), conv.summary) }, {
+			const result = await ai.agent.run({ engine: conv.engine, device: conv.device ?? null, conversation: conv.id, text: last.content, transcript: transcriptOf(upTo.slice(0, -1), conv.summary) }, {
 				signal: controller.signal,
 				onDelta: delta => { text += delta; setStreaming({ text }) },
 				onStatus: (kind, what) => { if (kind === 'tool' && !text) setStreaming({ text: '', status: 'Using a tool…' }); void what },
@@ -249,7 +289,8 @@ export function ChatApp() {
 
 	const send = async (text: string) => {
 		try {
-			const conv = conversation ?? (nextModel.startsWith('agent:') ? await newConversation(text, BUILT_IN, nextModel.slice(6)) : await newConversation(text, nextModel))
+			const choice = parseChoice(nextModel)
+			const conv = conversation ?? (choice.engine !== 'local' ? await newConversation(text, BUILT_IN, choice.engine, choice.device) : await newConversation(text, nextModel, 'local', me))
 			if (!conversation) {
 				await reloadList()
 				navigate(`/ai/c/${conv.id}`)
@@ -290,6 +331,7 @@ export function ChatApp() {
 			onNew={() => navigate(phone ? '/ai/new' : '/ai')}
 			onRename={(id, title) => void conversations.update(id, { title }).then(reloadList)}
 			onRemove={id => void remove(id)}
+			sectionOf={sectionOf}
 		/>
 	)
 	const chatView = (
@@ -310,8 +352,9 @@ export function ChatApp() {
 			models={modelOptions}
 			model={currentModel}
 			modelLabel={modelLabel}
-			onModel={readOnly ? undefined : changeModel}
-			onManageModels={readOnly ? undefined : () => setModelsOpen(true)}
+			// another engine may take over even when this one can't answer here (offline, no models)
+			onModel={modelOptions.length ? changeModel : undefined}
+			onManageModels={localAi ? () => setModelsOpen(true) : undefined}
 			onAssistant={() => setAssistantOpen(true)}
 		/>
 	)

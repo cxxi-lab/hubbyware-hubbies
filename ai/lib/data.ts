@@ -13,6 +13,8 @@ export interface Conversation {
 	/** a name of hubby.json "ai" (or, phase 3, a model added by link) */
 	model: string
 	engine: Engine
+	/** the account's device whose engine runs it (its session id); none: an older one, run here */
+	device?: string | null
 	/** what its oldest messages said (phase 2) */
 	summary?: string | null
 	summaryUpTo?: string | null
@@ -42,9 +44,9 @@ export const listConversations = () => conversations.findAll({ sort: '-lastMessa
 export const messagesOf = (id: string) => messages.findAll({ filter: { conversation: id }, sort: '_createdAt' })
 	.then(list => list.sort((a, b) => a._createdAt.localeCompare(b._createdAt) || a.id.localeCompare(b.id)))
 
-export function newConversation(firstMessage: string, model: string, engine: Engine = 'local'): Promise<ConversationDoc> {
+export function newConversation(firstMessage: string, model: string, engine: Engine = 'local', device: string | null = null): Promise<ConversationDoc> {
 	const line = firstMessage.replace(/\s+/g, ' ').trim()
-	return conversations.create({ title: line.length > 48 ? `${line.slice(0, 47)}…` : line || 'New chat', model, engine, lastMessageAt: new Date().toISOString() })
+	return conversations.create({ title: line.length > 48 ? `${line.slice(0, 47)}…` : line || 'New chat', model, engine, device, lastMessageAt: new Date().toISOString() })
 }
 
 export async function addMessage(message: Message): Promise<MessageDoc> {
